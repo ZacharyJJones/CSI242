@@ -1,10 +1,12 @@
 = Passcodes:
 
-Oslo
+Tue: Oslo
+Thu: Helsinki
 
 = Participation:
-1) Attended class virtually
+1) Attended class virtually, with camera on
 2) 
+3) 
 
 Self-Directed Learning:
 1) 
@@ -12,4 +14,4 @@ Self-Directed Learning:
 
 Projects:
 1) Uploaded CS 140 website to github
-2) LinkedIn Profile?
+2) LinkedIn Profile linked to personal webpage
