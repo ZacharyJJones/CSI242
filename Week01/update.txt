@@ -3,13 +3,14 @@
 Tue: Oslo
 Thu: Helsinki
 
+
 = Participation:
 1) Attended class virtually, with camera on
-2) 
-3) 
+2) I asked for clarification on how to use GitHub pages, as I did not initially understand what happened to enable it.
+
 
 Self-Directed Learning:
-1) 
+1) Completed Lesson #1 of CodeAcademy course; "Introduction to JavaScript"
 
 
 Projects:
