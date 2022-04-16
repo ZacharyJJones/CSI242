@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Lab 1 Assignments</title>
+</head>
+
+<body>
+	<h1>LAB 1 Worksheet
+		<!-- Zachary Jones -->
+
+		<!-- QUESTION 1 -->
+	</h1>
+	<h2>QUESTION 1</h2>
+	<p>Use the QuerySelector, getElementsBy* to select the div below with id = "Question1"</p>
+	<div id="Question1" style="height: 100px;width: 200px;border: 2px;border-style: solid;">
+		<p>div</p>
+	</div>
+	<script>
+		let div1 = document.getElementById('Question1');
+		div1.innerText = 'I have altered the html; Pray that I do not alter it further.'
+	</script>
+
+	<!-- QUESTION 2 -->
+	<h2>Question 2</h2>
+	<p>Edit the script tag below to set the background of div with id = "Question2" to blue, its height to 300px.</p>
+	<p>then print out in the console it's properties: height, width, and background color</p>
+	<div id="Question2" style="height: 100px;width: 200px;border: 2px;border-style: solid;">
+		<p>div</p>
+	</div>
+	<script>
+		let div2 = document.getElementById('Question2');
+		div2.style['background-color'] = 'blue';
+		div2.style['height'] = '300px';
+		console.log('background-color: ' + div2.style['background-color']);
+		console.log('height: ' + div2.style['height']);
+		console.log('width: ' + div2.style['width']);
+	</script>
+
+	<!-- QUESTION 3 -->
+	<h2>Question 3</h2>
+	<p>Add a <b>click</b> event to the div below. Then add an alert to that onclick event saying <b>"Hello there!"</b>
+	</p>
+	<p><i>There are many different types of events. A list of them could be found here </i></p>
+	<div id="Question3" style="height: 100px;width: 200px;border: 2px;border-style: solid;">
+		<p>div</p>
+	</div>
+	<script>let div3 = document.getElementById('Question3');
+		div3.addEventListener('click', (event) => {
+			console.log('Hello there!!! You clicked me!')
+		});
+	</script>
+
+	<!-- QUESTION 4 -->
+	<h2>QUESTION 4</h2>
+	<p>Select the textArea object using Javascript DOM Selectors, then assign it's value to new variable <b>var
+			input</b></p>
+	<p>Then console.log out <b>input</b></p>
+	<p><i>You can get the value of nearly any element you want in the DOM. You just select the element in javascript,
+			then use <b>google</b></i></p>
+	<textarea id="Question4_TextArea">
+    "Hello there!"
+</textarea>
+	<script>
+		let textArea = document.getElementById('Question4_TextArea');
+		var input = textArea.textContent;
+		console.log(input);
+
+		console.log('innerHTML: ' + textArea.innerHTML);
+		console.log('innerText: ' + textArea.innerText);
+	</script>
+
+
+
+</body>
+
+</html>

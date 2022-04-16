@@ -1,0 +1,21 @@
+= Passcodes:
+1) Henderson
+2) Stieb
+
+
+= Participation:
+1) Attended class, camera on
+2) asking or answering a question in class/in the comments section under a video
+3) Completed Lab activity
+
+
+= Self-Directed Learning:
+1) CodeAcademy
+ -- [Lesson]	Variables
+ -- [Project]	Kelvin Weather
+ -- [Project]	Dog Years
+ -- [Module]	Conditionals
+
+
+= Current Project Progress (#2, Calculator App):
+1) 
