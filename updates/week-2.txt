@@ -15,6 +15,14 @@
  -- [Project]	Kelvin Weather
  -- [Project]	Dog Years
  -- [Module]	Conditionals
+ -- [Lesson]	Functions
+ -- [Lesson]	Scope
+ -- [Lesson]	Arrays
+ -- [Lesson]	Higher-Order Functions
+ -- [Lesson]	Iterators
+ -- [Lesson]	Objects
+ -- [Lesson]	Advanced Objects
+ <CodeAcademy course completed>
 
 
 = Current Project Progress (#2, Calculator App):
