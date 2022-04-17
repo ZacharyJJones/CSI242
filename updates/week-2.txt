@@ -18,4 +18,4 @@
 
 
 = Current Project Progress (#2, Calculator App):
-1) 
+1) HTMl and CSS for calculator DONE.

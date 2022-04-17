@@ -1,0 +1,125 @@
+/* css reset */
+* {
+	margin: 0px;
+	padding: 0px;
+	box-sizing: border-box;
+}
+
+:root {
+	--display-bg-color: rgb(43, 45, 47);
+	--system-red: rgb(255, 90, 82);
+	--system-yellow: rgb(230, 192, 41);
+	--system-green: rgb(82, 194, 43);
+
+	--color-text: rgb(231, 231, 231);
+	--color-operation: rgb(63, 65, 67);
+	--color-number: rgb(95, 96, 98);
+	--color-expression: rgb(255, 159, 12);
+}
+
+body {
+	font-family: 'Courier New', Courier, monospace;
+	font-size: 1rem;
+}
+
+h1 {
+	margin-bottom: 50px;
+}
+
+h2 {
+	margin-top: 50px;
+}
+
+.flex-center {
+	display:flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.grid-container {
+	/* width: 500px;
+	height: 900px; */
+
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr 1fr;
+	gap: 0px;
+
+	/* font-weight: bold; */
+	font-size: 250%;
+}
+
+#calculator {
+	border: 2px solid black;
+	border-radius: 10px;
+	overflow: hidden;
+}
+
+.calculator-head {
+	background-color: var(--display-bg-color);
+}
+
+.system-buttons {
+	list-style: none;
+	display: flex;
+}
+
+.system-buttons li {
+	margin: 5px;
+	padding: 5px;
+	border: 1px solid black;
+	border-radius: 15px;
+}
+
+#calculator-close {
+	border-color: var(--system-red);
+	background-color: var(--system-red);
+}
+
+#calculator-sleep {
+	border-color: var(--system-yellow);
+	background-color: var(--system-yellow);
+}
+
+#calculator-open {
+	border-color: var(--system-green);
+	background-color: var(--system-green);
+}
+
+.number-display {
+	font-size: 400%;
+	text-align: right;
+	padding: 10px 0px 0px 0px;
+	color: white;
+	font-weight: lighter;
+}
+
+.calc-button {
+	color: var(--color-text);
+	padding: 1rem;
+	/* width: 50px;
+	height: 50px; */
+
+	border: 1px solid black;
+	
+	display:flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.calc-button.operation {
+	background-color: var(--color-operation);
+}
+
+.calc-button.number {
+	background-color: var(--color-number);
+}
+
+.calc-button.expression {
+	background-color: var(--color-expression);
+}
+
+#calc-number-0 {
+	grid-column-start: 1;
+	grid-column-end: 3;
+}
+
