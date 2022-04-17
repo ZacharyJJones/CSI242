@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Wackamole Game</title>
+	<script src="howler.js"></script>
+</head>
+<script>
+	class ColorWheel {
+		color; //array
+		current; //this will be a number
+		constructor(colors) {
+			this.colors = colors;
+			this.current = -1;
+		}
+		nextColor() {
+			this.current++;
+			if (this.current >= this.colors.length) {
+				this.current = 0;
+			}
+			return this.colors[this.current];
+		}
+	}
+
+
+	function createId() {
+		return `${(Math.round(Math.random() * 3))}${(Math.round(Math.random() * 3))}`;
+	}
+</script>
+<script>
+	var score = 0;
+	var id = null;
+	var clicked = false;
+	var streak = 0;
+
+	var newColors = new ColorWheel(["blue", "pink", "yellow", "red"]);
+
+	window.onload = function () {
+		// var x = 10;
+
+		// setTimeout((x)=>{
+		//     console.log("x is:", x);
+		// }, 750);
+
+		// setTimeout(function(x){
+		//     console.log("x is ", x);
+		// }(x), 1000);
+
+		// element.addEventListener(action, function(parameters){
+
+		// }(parameters));
+
+		document.getElementById("runButton").addEventListener("click", function () {
+			score = 0;
+			streak = 0;
+			setMole();
+		});
+	}
+	function setMole() {
+		id = createId();
+		clicked = false;
+		var moleCell = document.getElementById(id);
+		moleCell.classList.add("active"); //adds the image of the mole to the cell
+		moleCell.addEventListener("click", killMole, true);
+		setTimeout(checkMole, function () {
+			return 500 + (Math.round(Math.random() * 1000));
+		}());
+	}
+	function checkMole() {
+		var moleCell = document.getElementById(id);
+		var scoreTrackerElement = document.getElementById("scoreTracker");
+		var streakTrackerElement = document.getElementById("streakTrack");
+
+		if (clicked === false) {
+			score = score - 20;
+			streak = 0;
+		} else {
+			streak++;
+			streakTrackerElement.style.color = newColors.nextColor();
+			score = (score + 20) * (streak * .5);
+			if (score > 100) {
+				//winScreen();
+				return;
+			}
+		}
+
+		streakTrackerElement.style.color = newColors.nextColor();
+		scoreTrackerElement.innerText = "score : " + score;
+		streakTrackerElement.innerText = 'Streak : ' + streak;
+
+
+		console.log(score);
+
+		moleCell.classList.remove("active");
+		moleCell.classList.remove("clicked");
+		moleCell.removeEventListener("click", killMole, true);
+
+		var newId = createId();
+		while (newId === id) {
+			newId = createId();
+		}
+		id = newId;
+		setMole();
+	}
+	function killMole() {
+		clicked = true;
+		var moleCell = document.getElementById(id);
+		moleCell.classList.remove("active");
+		moleCell.classList.add("clicked");
+	}
+</script>
+<style>
+	#main {
+		position: relative;
+		height: 640px;
+		width: 640px;
+		display: grid;
+		grid-template-columns: repeat(4, 160px);
+		grid-template-row: repeat(4, 160px);
+		outline: 1px solid black;
+	}
+
+	#main>.cell {
+		width: 160px;
+		height: 160px;
+		outline: 1px solid black;
+	}
+
+	.active {
+		background-image: url(./WhackAMole1.jpg);
+		background-size: contain;
+		background-repeat: none;
+		background-position: 0%;
+	}
+
+	.clicked {
+		background-image: url(/blood.png);
+		background-size: contain;
+		background-repeat: none;
+		background-position: 0%;
+	}
+</style>
+
+<body>
+	<button id="runButton">Play</button>
+	<div id="scoreTracker">0</div>;
+	<div id="streakTrack">0</div>
+	<div id="main">
+		<!-- first row -->
+		<div class="cell" id="00"></div>
+		<div class="cell" id="01"></div>
+		<div class="cell" id="02"></div>
+		<div class="cell" id="03"></div>
+
+		<!-- second row -->
+		<div class="cell" id="10"></div>
+		<div class="cell" id="11"></div>
+		<div class="cell" id="12"></div>
+		<div class="cell" id="13"></div>
+
+
+		<!-- third row -->
+		<div class="cell" id="20"></div>
+		<div class="cell" id="21"></div>
+		<div class="cell" id="22"></div>
+		<div class="cell" id="23"></div>
+
+
+		<!-- Fourth row -->
+		<div class="cell" id="30"></div>
+		<div class="cell" id="31"></div>
+		<div class="cell" id="32"></div>
+		<div class="cell" id="33"></div>
+	</div>
+
+</body>
+
+</html>
