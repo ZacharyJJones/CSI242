@@ -1,0 +1,17 @@
+= Passcodes:
+1) Magnetic
+2) Electric
+
+
+= Participation:
+1) Attended class, camera on
+2) Office hours - how to use ".map()" to create sets of elements with React.
+
+
+= Self-Directed Learning:
+1) React site tutorial
+2) [Todo] First lecture of linked course in syllabus for react native
+
+
+= Current Project Progress:
+1) [Todo] more than 50% of expected Javascript written for calculator app
