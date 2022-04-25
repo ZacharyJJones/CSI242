@@ -9,9 +9,8 @@
 
 
 = Self-Directed Learning:
-1) React site tutorial
-2) [Todo] First lecture of linked course in syllabus for react native
+1) React site tutorial (tic-tac-toe) done!
 
 
 = Current Project Progress:
-1) [Todo] more than 50% of expected Javascript written for calculator app
+1) Good progress on javascript calculator (percentage operation is a mind-boggler)

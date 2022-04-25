@@ -87,11 +87,19 @@ h2 {
 }
 
 .number-display {
+	padding: 0px 15px;
 	font-size: 400%;
 	text-align: right;
-	padding: 10px 0px 0px 0px;
 	color: white;
 	font-weight: lighter;
+}
+
+.number-display-previous {
+	font-size: 150%;
+	text-align: right;
+	padding: 0px 30px;
+	color: var(--color-number);
+	font-weight: bold;
 }
 
 .calc-button {
