@@ -3,8 +3,11 @@ const nbsp = "\u00A0";
 
 // Variables
 let nums;
-let currentSign;
-let currentInput;
+let sign;
+
+let input;
+let isPercent;
+let isNegative;
 
 // Elements
 let numberDisplay = null;
@@ -39,7 +42,7 @@ function _initListeners() {
 
 	this.document
 		.getElementById("calc-button-percent")
-		.addEventListener("click", (e) => calc_clickAC());
+		.addEventListener("click", (e) => calc_clickPercent());
 
 	// Expression Buttons
 	// this.document
@@ -60,59 +63,37 @@ function _initListeners() {
 }
 
 function _resetData() {
-	nums = [null, null];
-	currentSign = null;
-	currentInput = "";
+	sign = null;
+	nums = [
+		{ value: NaN, isPercent: false },
+		{ value: NaN, isPercent: false },
+	];
+	input = "";
+	isPercent = false;
+	isNegative = false;
 }
 
-// Main
-window.addEventListener("load", function (event) {
-	_initListeners();
-
-	// let sample = {
-	// 	firstNum: 0,
-	// 	sign: "+",
-	// 	lastNum: 0
-	// };
-
-	//this.document.getElementById("").style.color = "red";
-	//this.document.getElementsByClassName("number-display")[0].style.color = "red";
-
-	_resetData();
-	updateDisplay();
-});
-
-// ==========================
-
-function calc_clickAC() {
-	_resetData();
-	updateDisplay();
-}
-
-function calc_clickPlusMinus() {
-	const firstChar = currentInput[0];
-	console.log(firstChar);
-}
-
-function calc_clickPercent() {
-	const firstChar = currentInput[0];
-	console.log(firstChar);
-}
-
-function calc_clickNumber(number) {
-	console.log("Button pressed, num is: " + number);
-
-	if (number === ".") {
-		currentInput += ".";
-		return;
-	} else {
-		currentInput += number;
+function _updateDisplay() {
+	let mainDisplay = "";
+	if (isNegative === true) {
+		mainDisplay += "-";
 	}
+	mainDisplay += input === "" ? 0 : input;
+	if (isPercent === true) {
+		mainDisplay += "%";
+	}
+	numberDisplay.textContent = mainDisplay;
 
-	updateDisplay(null);
+	if (sign === null) {
+		numberDisplayPrevious.textContent = nbsp;
+	} else {
+		let prevDisplay = nums[0]["value"];
+		let numPercent = nums[0]["isPercent"] ? "%" : "";
+		numberDisplayPrevious.textContent = `${prevDisplay}${numPercent} ${sign}`;
+	}
 }
 
-function calculate() {
+function _calculate() {
 	let result = NaN;
 	if (sign === "+") {
 		result = nums[0] + nums[1];
@@ -124,32 +105,29 @@ function calculate() {
 		result = nums[0] / nums[1];
 	}
 
+	// account for percentage operation(s) !!!
+
 	_resetData();
-	updateDisplay();
+	_updateDisplay();
 
 	// Display result, overriding the normal "update display".
 	// -- will be overwritten when next button is clicked.
 	numberDisplay.textContent = "" + result;
 }
 
-function updateDisplay() {
-	let mainDisplay = currentInput;
-	if (currentInput === "") {
-		mainDisplay = 0;
-	}
-	numberDisplay.textContent = mainDisplay;
+// Main
+window.addEventListener("load", function (event) {
+	_initListeners();
+	_resetData();
+	_updateDisplay();
+});
 
-	if (currentSign === null) {
-		numberDisplayPrevious.textContent = nbsp;
-	} else {
-		numberDisplayPrevious.textContent = `${nums[0]} ${currentSign}`;
-	}
-}
+// ==========================
 
 function enterSign(sign) {
-	const inputNum = Number.parseFloat(currentInput);
+	const inputNum = Number.parseFloat(input);
 	if (inputNum === NaN) {
-		console.log("Error: currentInput is not a number (" + currentInput + ")");
+		console.log("Error: currentInput is not a number (" + input + ")");
 		return;
 	}
 
@@ -160,4 +138,33 @@ function enterSign(sign) {
 	}
 
 	// set number,
+}
+
+function calc_clickNumber(number) {
+	console.log("Button pressed, num is: " + number);
+
+	if (number === ".") {
+		input += ".";
+		return;
+	} else {
+		input += number;
+	}
+
+	_updateDisplay();
+}
+
+// Set: Operations
+function calc_clickAC() {
+	_resetData();
+	_updateDisplay();
+}
+
+function calc_clickPlusMinus() {
+	isNegative = !isNegative;
+	_updateDisplay();
+}
+
+function calc_clickPercent() {
+	isPercent = !isPercent;
+	_updateDisplay();
 }
