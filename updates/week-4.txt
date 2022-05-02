@@ -9,8 +9,8 @@
 
 
 = Self-Directed Learning:
-1) [ToDo] React lectures linked in syllabus
+1) Watched first of react native course lectures
 
 
 = Current Project Progress:
-1) [ToDo] Finished calculator!
+1) Made some progress on calculator, just expression signs (calculation w/ "=" included) to do.
