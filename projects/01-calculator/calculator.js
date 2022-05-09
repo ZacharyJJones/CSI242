@@ -1,10 +1,10 @@
-// Const
 const nbsp = "\u00A0";
 
 // Variables
-let nums;
-let sign;
+let prevNumInfo;
+let operationSign;
 
+// "numInfo"
 let input;
 let isPercent;
 let isNegative;
@@ -44,30 +44,76 @@ function _initListeners() {
 		.getElementById("calc-button-percent")
 		.addEventListener("click", (e) => calc_clickPercent());
 
-	// Expression Buttons
-	// this.document
-	// 	.getElementById("calc-number-decimal")
-	// 	.addEventListener("click", (e) => {});
+	// expression buttons
+	this.document
+		.getElementById("calc-button-divide")
+		.addEventListener("click", (e) => calc_clickSign("/"));
 
-	/*
-	<div class="calc-button operation" id="calc-button-ac">AC</div>
-	<div class="calc-button operation" id="calc-button-sign">±</div>
-	<div class="calc-button operation" id="calc-button-percent">%</div>
+	this.document
+		.getElementById("calc-button-multiply")
+		.addEventListener("click", (e) => calc_clickSign("*"));
 
-	<div class="calc-button expression" id="calc-button-divide">÷</div>
-	<div class="calc-button expression" id="calc-button-multiply">x</div>
-	<div class="calc-button expression" id="calc-button-subtract">-</div>
-	<div class="calc-button expression" id="calc-button-add">+</div>
-	<div class="calc-button expression" id="calc-button-equals">=</div>
-	*/
+	this.document
+		.getElementById("calc-button-subtract")
+		.addEventListener("click", (e) => calc_clickSign("-"));
+
+	this.document
+		.getElementById("calc-button-add")
+		.addEventListener("click", (e) => calc_clickSign("+"));
+
+	this.document
+		.getElementById("calc-button-equals")
+		.addEventListener("click", (e) => _calculate());
+
+	this.document.addEventListener("keyup", (e) => _handleInput(e));
+}
+
+function _handleInput(keyEvent) {
+	keyEvent.preventDefault();
+	let keypadNums = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((x) => x.toString());
+	let keypadSigns = ["*", "/", "+", "-"];
+
+	let key = keyEvent.key;
+	if (key === "Shift") {
+		return;
+	}
+
+	// Operations
+	else if (key === "Escape") {
+		calc_clickAC();
+	} else if (key === "%") {
+		calc_clickPercent();
+	} else if (key === "~") {
+		// Using tilde to flip sign because
+		// ... key combo is complex at this point
+		calc_clickPlusMinus();
+	}
+
+	// Numbers
+	else if (anyInArrayMatches(keypadNums, key)) {
+		// key is a number
+		calc_clickNumber(key);
+	} else if (key === ".") {
+		calc_clickNumber(".");
+	}
+
+	// Expressions
+	else if (anyInArrayMatches(keypadSigns, key)) {
+		calc_clickSign(key);
+	} else if (key === "=" || key === "Enter") {
+		_calculate();
+	}
+
+	console.log(keyEvent.key);
 }
 
 function _resetData() {
-	sign = null;
-	nums = [
-		{ value: NaN, isPercent: false },
-		{ value: NaN, isPercent: false },
-	];
+	operationSign = null;
+	prevNumInfo = {
+		value: NaN,
+		isPercent: false,
+		isNegative: false,
+	};
 	input = "";
 	isPercent = false;
 	isNegative = false;
@@ -84,28 +130,49 @@ function _updateDisplay() {
 	}
 	numberDisplay.textContent = mainDisplay;
 
-	if (sign === null) {
+	if (operationSign === null) {
 		numberDisplayPrevious.textContent = nbsp;
 	} else {
-		let prevDisplay = nums[0]["value"];
-		let numPercent = nums[0]["isPercent"] ? "%" : "";
-		numberDisplayPrevious.textContent = `${prevDisplay}${numPercent} ${sign}`;
+		let prevDisplay = prevNumInfo.value;
+		let numPercent = prevNumInfo.isPercent ? "%" : "";
+		numberDisplayPrevious.textContent = `${prevDisplay}${numPercent} ${operationSign}`;
 	}
 }
 
 function _calculate() {
-	let result = NaN;
-	if (sign === "+") {
-		result = nums[0] + nums[1];
-	} else if (sign === "-") {
-		result = nums[0] - nums[1];
-	} else if (sign === "*") {
-		result = nums[0] * nums[1];
-	} else if (sign === "/") {
-		result = nums[0] / nums[1];
+	if (prevNumInfo.value === NaN || !Number.parseFloat(input)) {
+		return;
 	}
 
-	// account for percentage operation(s) !!!
+	// Get first num
+	let prevNumber = Number.parseFloat(prevNumInfo.value);
+	if (prevNumInfo.isNegative) {
+		prevNumber *= -1;
+	}
+	if (prevNumInfo.isPercent) {
+		prevNumber /= 100.0;
+	}
+
+	// Get second num
+	let thisNumber = Number.parseFloat(input);
+	if (isNegative) {
+		thisNumber *= -1;
+	}
+	if (isPercent) {
+		thisNumber /= 100.0;
+	}
+
+	// Calculate
+	let result = NaN;
+	if (operationSign === "+") {
+		result = prevNumber + thisNumber;
+	} else if (operationSign === "-") {
+		result = prevNumber - thisNumber;
+	} else if (operationSign === "*") {
+		result = prevNumber * thisNumber;
+	} else if (operationSign === "/") {
+		result = prevNumber / thisNumber;
+	}
 
 	_resetData();
 	_updateDisplay();
@@ -113,6 +180,11 @@ function _calculate() {
 	// Display result, overriding the normal "update display".
 	// -- will be overwritten when next button is clicked.
 	numberDisplay.textContent = "" + result;
+}
+
+// Helper
+function anyInArrayMatches(array, compare) {
+	return !array.every((x) => x != compare);
 }
 
 // Main
@@ -124,32 +196,27 @@ window.addEventListener("load", function (event) {
 
 // ==========================
 
-function enterSign(sign) {
+function calc_clickSign(clickedSign) {
 	const inputNum = Number.parseFloat(input);
 	if (inputNum === NaN) {
 		console.log("Error: currentInput is not a number (" + input + ")");
 		return;
 	}
 
-	if (sign === "+") {
-	} else if (sign === "-") {
-	} else if (sign === "*") {
-	} else if (sign === "/") {
-	}
+	let tempNumInfo = {
+		value: input,
+		isNegative: isNegative,
+		isPercent: isPercent,
+	};
 
-	// set number,
+	_resetData();
+	operationSign = clickedSign;
+	prevNumInfo = tempNumInfo;
+	_updateDisplay();
 }
 
 function calc_clickNumber(number) {
-	console.log("Button pressed, num is: " + number);
-
-	if (number === ".") {
-		input += ".";
-		return;
-	} else {
-		input += number;
-	}
-
+	input += number;
 	_updateDisplay();
 }
 

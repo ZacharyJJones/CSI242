@@ -1,0 +1,17 @@
+= Passcodes:
+1) Teotihuacan
+2) Mohenjo Daro
+
+
+= Participation:
+1) Attended class, camera on
+2) 
+3) 
+
+
+= Self-Directed Learning:
+1) Block scoping / closure linked in modules
+
+
+= Current Project Progress:
+1) Finished calculator project - definitely works in best-case scenarios.
