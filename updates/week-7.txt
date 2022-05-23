@@ -1,0 +1,20 @@
+= Passcodes:
+1) 
+2) 
+
+
+= Participation:
+1) 
+2) 
+3) 
+
+
+= Self-Directed Learning:
+1) 
+
+
+= Current Project Progress:
+1) Working on image upload + slicing, will come back to this after writing logic for actual slide puzzle. 
+ ... An image would be cooler than numbered tiles, but if the only thing I have to show is an image slicer, that is not much of a game.
+
+Note: Not a great week, academically. Unfortunate to see, I will catch up.

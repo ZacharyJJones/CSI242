@@ -1,0 +1,30 @@
+/* css reset */
+* {
+	margin: 0px;
+	padding: 0px;
+	box-sizing: border-box;
+}
+
+/* :root {
+	color scheme here
+} */
+
+
+.flex-center {
+	display:flex;
+	justify-content: center;
+	align-items: center;
+}
+
+/* ------------------ */
+
+body {
+	font-family: 'Courier New', Courier, monospace;
+	font-size: 1rem;
+}
+
+.bg {
+	margin: 25px;
+	padding: 25px;
+	background-color: lightblue;
+}
