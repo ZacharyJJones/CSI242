@@ -1,0 +1,35 @@
+/* css reset */
+* {
+	margin: 0px;
+	padding: 0px;
+	box-sizing: border-box;
+}
+
+/* ================= */
+
+/* body {
+	background-color: purple;
+} */
+
+#root {
+	margin: 150px;
+	padding: 150px;
+
+	background-color: cornflowerblue;
+}
+
+.display-row {
+	display: flex;
+	justify-content: center;
+	text-align: center;
+}
+
+.display-item {
+	height: 100px;
+	width: 100px;
+	background-color: aqua;
+	padding: 10px;
+	/* margin: 1px; */
+
+	border: 1px solid black;
+}

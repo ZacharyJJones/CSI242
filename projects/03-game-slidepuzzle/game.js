@@ -1,5 +1,80 @@
-import React from "react";
-import "./Game.css";
+let board;
+
+window.addEventListener("load", (event) => {
+	let width = 16;
+	let height = 16;
+
+	console.log("loaded");
+	_initBoard(width, height);
+	console.log(board);
+
+	let root = document.getElementById("root");
+	for (let y = 0; y < height; y++) {
+		const row = document.createElement("div");
+		row.className = "display-row";
+		root.appendChild(row);
+		for (let x = 0; x < width; x++) {
+			const item = document.createElement("div");
+			item.className = "display-item";
+			if (board[y][x] === null) {
+				item.innerText = "empty";
+			} else {
+				item.innerText = `(${x}, ${y})`;
+			}
+			row.appendChild(item);
+		}
+	}
+});
+
+// =====================================
+
+function _initBoard(width, height) {
+	let workingBoard = [];
+	for (let y = 0; y < height; y++) {
+		let row = [];
+		for (let x = 0; x < width; x++) {
+			let element = {
+				x: x,
+				y: y,
+			};
+			row.push(element);
+		}
+		workingBoard.push(row);
+	}
+	workingBoard[height - 1][width - 1] = null;
+	board = workingBoard;
+}
+
+// =====================================
+
+function isBoardSolved(board) {
+	let result = board.every((row) =>
+		row.every((piece) => _isPieceInCorrectPosition(board, piece))
+	);
+
+	return result;
+}
+function _isPieceInCorrectPosition(board, piece) {
+	if (piece === null) {
+		return true;
+	}
+
+	let destination = board[piece.y][piece.x];
+
+	if (destination === null) {
+		return false;
+	}
+
+	if (destination.x !== piece.x) {
+		return false;
+	}
+
+	if (destination.y !== piece.y) {
+		return false;
+	}
+
+	return true;
+}
 
 function setImageToUploaded(event) {
 	console.log("event method called!");
@@ -67,25 +142,23 @@ function sliceImage(image, numColumns, numRows) {
 	});
 }
 
-function Game() {
-	return (
-		<div className="bg" id="set">
-			<div className="flex-center">
-				<input
-					type="file"
-					accept="image/*"
-					id="imageUpload"
-					onChange={setImageToUploaded}
-				></input>
-			</div>
-			<div className="flex-center">
-				<img id="imageDisplay" width="80%" alt="Your Upload" />
-			</div>
-			<div className="flex-center"></div>
-			<div className="flex-center"></div>
-			<br></br>
-		</div>
-	);
-}
-
-export default Game;
+// function Game() {
+// 	return (
+// 		<div className="bg" id="set">
+// 			<div className="flex-center">
+// 				<input
+// 					type="file"
+// 					accept="image/*"
+// 					id="imageUpload"
+// 					onChange={setImageToUploaded}
+// 				></input>
+// 			</div>
+// 			<div className="flex-center">
+// 				<img id="imageDisplay" width="80%" alt="Your Upload" />
+// 			</div>
+// 			<div className="flex-center"></div>
+// 			<div className="flex-center"></div>
+// 			<br></br>
+// 		</div>
+// 	);
+// }

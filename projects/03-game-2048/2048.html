@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="2048.css">
+	<link rel="stylesheet" href="Tiles.css">
+	<script src="2048.js"></script>
+	<script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+	<script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+	<title>Twenty-Fourty-Eight</title>
+</head>
+
+<body>
+
+	<section id="section-head">
+		<div class="center">
+			<h1>2048</h1>
+		</div>
+		<div class="center">
+			<button id="newGame">Reset</button>
+		</div>
+	</section>
+
+	<section id="section-game" class="center">
+
+		<div class="grid-controls">
+
+			<div></div>
+			<div id="button-up" class="center">
+				<ion-icon class="btn-arrow-icon" name="caret-up-outline"></ion-icon>
+			</div>
+			<div></div>
+
+			<div id="button-left" class="center">
+				<ion-icon class="btn-arrow-icon" name="caret-back-outline"></ion-icon>
+			</div>
+			<div class="game-board">
+				<div id="0_0" class="piece"></div>
+				<div id="1_0" class="piece"></div>
+				<div id="2_0" class="piece">2</div>
+				<div id="3_0" class="piece">2</div>
+				<div id="0_1" class="piece">2</div>
+				<div id="1_1" class="piece">2</div>
+				<div id="2_1" class="piece">4</div>
+				<div id="3_1" class="piece">8</div>
+				<div id="0_2" class="piece">16</div>
+				<div id="1_2" class="piece">32</div>
+				<div id="2_2" class="piece">64</div>
+				<div id="3_2" class="piece">128</div>
+				<div id="0_3" class="piece">256</div>
+				<div id="1_3" class="piece">512</div>
+				<div id="2_3" class="piece">1024</div>
+				<div id="3_3" class="piece">2048</div>
+			</div>
+			<div id="button-right" class="center">
+				<ion-icon class="btn-arrow-icon" name="caret-forward-outline"></ion-icon>
+			</div>
+
+			<div></div>
+			<div id="button-down" class="center">
+				<ion-icon class="btn-arrow-icon" name="caret-down-outline"></ion-icon>
+			</div>
+			<div></div>
+
+		</div>
+	</section>
+
+	<section id="section-foot" class="center">
+		<p style="width: 40%;">
+			<strong>HOW TO PLAY:</strong> Click the <strong>arrow buttons</strong> to move the tiles!
+			Tiles with the same number <strong>merge into one</strong> when they touch.
+			Add them up to reach <strong>2048!</strong>
+		</p>
+	</section>
+</body>
+
+
+</div>
+
+</html>

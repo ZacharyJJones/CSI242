@@ -1,0 +1,66 @@
+.piece {
+	width: 100px;
+	height: 100px;
+
+	display: flex;
+	justify-content: center;
+	align-items: center;
+
+	padding: 10px;
+	font-size: 250%;
+	font-weight: bold;
+	border-radius: 5px;
+	background-color: var(--color-tile-bg-null);
+	color: var(--color-text-2);
+}
+
+._2 {
+	background-color: var(--color-tile-bg-2);
+	color: var(--color-text-1);
+}
+
+._4 {
+	background-color: var(--color-tile-bg-4);
+	color: var(--color-text-1);
+}
+
+._8 {
+	background-color: var(--color-tile-bg-8);
+}
+
+._16 {
+	background-color: var(--color-tile-bg-16);
+}
+
+._32 {
+	background-color: var(--color-tile-bg-32);
+}
+
+._64 {
+	background-color: var(--color-tile-bg-64);
+}
+
+._128 {
+	background-color: var(--color-tile-bg-128);
+}
+
+/* From here on, tiles get a matching shadow effect to appear glowing */
+._256 {
+	background-color: var(--color-tile-bg-256);
+	box-shadow: 0px 0px 20px var(--color-tile-bg-256);
+}
+
+._512 {
+	background-color: var(--color-tile-bg-512);
+	box-shadow: 0px 0px 20px var(--color-tile-bg-512);
+}
+
+._1024 {
+	background-color: var(--color-tile-bg-1024);
+	box-shadow: 0px 0px 20px var(--color-tile-bg-1024);
+}
+
+._2048 {
+	background-color: var(--color-tile-bg-2048);
+	box-shadow: 0px 0px 20px var(--color-tile-bg-2048);
+}
