@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Index Page</title>
+</head>
+
+<body>
+	<header>Header</header>
+	<section>
+		<h2>Section 2</h2>
+		<div>
+			<input type="text" id="stringToSend">
+			<button onclick="postData()">Post Data</button>
+		</div>
+	</section>
+	<section>Section 2</section>
+	<footer>Footer</footer>
+
+	<script>
+		function postData() {
+			let post = {
+				method: "POST",
+				headers: {
+					"content-type": "application/json"
+				},
+				body: JSON.stringify({
+					textField: document.getElementById("stringToSend").value
+				}),
+			}
+
+			fetch("/test", post)
+				.then((response) => response.json())
+				.then((data) => {
+					console.log("logging data", data);
+				});
+
+		}
+	</script>
+</body>
+
+</html>
