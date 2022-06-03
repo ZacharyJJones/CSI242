@@ -18,6 +18,22 @@ window.addEventListener("load", () => {
 		.getElementById("newGame")
 		.addEventListener("click", () => _initGame());
 
+	window.addEventListener("keyup", (event) => {
+		const key = event.code;
+		if (key === "ArrowUp" || key === "KeyW") {
+			move("up");
+		}
+		if (key === "ArrowDown" || key === "KeyS") {
+			move("down");
+		}
+		if (key === "ArrowLeft" || key === "KeyA") {
+			move("left");
+		}
+		if (key === "ArrowRight" || key === "KeyD") {
+			move("right");
+		}
+	});
+
 	_initGame();
 });
 
