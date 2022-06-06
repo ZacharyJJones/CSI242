@@ -5,13 +5,39 @@
 	<meta charset="UTF-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Document</title>
+	<link rel="stylesheet" href="sort.css">
+	<link rel="stylesheet" href="sort-canvas.css">
+	<script src="sort.js"></script>
+	<script src="sort-canvas.js"></script>
+	<title>Sorting Algorithm Visualizer</title>
 </head>
 
 <body>
 	<!-- 
-		baseline: canvas which displays 
+		baseline: canvas which displays sorting algorithm
 	 -->
+	<h1 class="center">Sorting Algorithm Visualizer</h1>
+	<div class="center">
+		<button id="arr-size-down">
+			Halve Size
+		</button>
+		<p>| |</p>
+		<button id="arr-shuffle">
+			Shuffle
+		</button>
+		<p>| |</p>
+		<button id="arr-size-up">
+			Double Size
+		</button>
+	</div>
+	<br>
+	<div class="center">
+		<div class="canvas-bg">
+			<canvas id="sort-display"></canvas>
+		</div>
+
+	</div>
+
 </body>
 
 </html>

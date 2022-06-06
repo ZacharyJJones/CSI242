@@ -1,2 +1,0 @@
-When going into async functions, ask Matthew about reference type scoping w/ async functions, and their funny behavior (couldn't really get into it before async)
-

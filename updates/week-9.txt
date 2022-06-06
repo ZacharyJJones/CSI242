@@ -5,14 +5,14 @@
 
 = Participation:
 1) Attended class, camera on
-2) 
-3) 
+2) Attended lab!
+3) Had a question in-class Tuesday. (Also Thursday I believe)
 
 
 = Self-Directed Learning:
-1) ... [Aim] React Native Course
+1) Attended lab
 
 
 = Current Project Progress:
 1) Completed project 03-Game (2022-06-01)
-2) ... Project 4 progress:
+2) Working on project 04: Canvas view of array with just white bars (no highlights yet) set up.
