@@ -3,3 +3,12 @@
 	justify-content: center;
 	align-items: center;
 }
+
+.canvas-bg {
+	background-color: black;
+	padding: 25px;
+}
+
+canvas {
+	background-color: black;
+}
