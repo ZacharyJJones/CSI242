@@ -1,7 +1,12 @@
+const color_red = "#FF0000";
+const color_grey = "#AAA";
+const timeout = 20;
+
 const canvasWidth = 1000;
 const canvasHeight = 600;
 
-let arrSize = 512;
+let sortSize = 64;
+let sortingArray = [];
 
 /*
 	Array flow:
@@ -18,49 +23,82 @@ window.addEventListener("load", () => {
 		canvasHeight
 	);
 
-	_temp_drawArray(arrSize, ctx);
-	// Interactive Buttons
+	sortingArray = _initArray(sortSize);
+	_drawArray(sortingArray, ctx);
 
-	document.getElementById("arr-shuffle").addEventListener("click", () => {
-		_temp_drawArray(arrSize, ctx);
-	});
+	// Interactive Buttons
 	document.getElementById("arr-size-down").addEventListener("click", () => {
-		arrSize /= 2;
-		if (arrSize < 1) {
-			arrSize = 1;
-		}
-		_temp_drawArray(arrSize, ctx);
+		sortSize = sortSize >= 2 ? sortSize / 2 : 1;
+		sortingArray = _initArray(sortSize);
+		_drawArray(sortingArray, ctx);
 	});
 	document.getElementById("arr-size-up").addEventListener("click", () => {
-		arrSize *= 2;
-		_temp_drawArray(arrSize, ctx);
+		sortSize *= 2;
+		sortingArray = _initArray(sortSize);
+		_drawArray(sortingArray, ctx);
+	});
+
+	document.getElementById("arr-shuffle").addEventListener("click", () => {
+		algo_randomize(sortingArray, ctx);
+	});
+	document.getElementById("arr-gnome").addEventListener("click", () => {
+		algo_gnome(sortingArray, ctx);
 	});
 });
 
-function _temp_drawArray(size, ctx) {
-	ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-	let array = _getRandValueArray(arrSize);
-	array.forEach((element, i) => {
-		_drawRectangle(ctx, array, i);
-	});
+// Callback method for displaying state at each comparison
+async function displayFunc(array, ctx, props) {
+	// props.activeBounds.min/max
+	// props.compareIndex (stays put)
+	// props.searchIndex (moves around)
+
+	console.log;
+	_drawArray(array, ctx, props);
+	await new Promise((resolve) => setTimeout(resolve, timeout));
 }
 
 // ====================================
 
-function _getRandValueArray(arrayLength) {
-	let array = new Array(arrayLength);
-	for (let i = 0; i < arrayLength; i++) {
-		array[i] = Math.ceil(Math.random() * arrayLength);
+function _drawArray(array, ctx, props) {
+	// Basic White Rects
+	ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+	array.forEach((x, i) => {
+		_drawRectangle(array, ctx, i);
+	});
+
+	// If props are given, use them!
+	if (props !== undefined) {
+		// remember original color
+		const originalFillStyle = ctx.fillStyle;
+
+		// Show "Active" area
+		ctx.fillStyle = color_grey;
+		if (props.activeBounds !== undefined) {
+			array.forEach((x, i) => {
+				if (i < props.activeBounds.min || props.activeBounds.max < i) {
+					_drawRectangle(array, ctx, i);
+				}
+			});
+		}
+
+		// Show compared indices
+		ctx.fillStyle = color_red;
+		if (props.compareIndex !== undefined)
+			_drawRectangle(array, ctx, props.compareIndex);
+		if (props.searchIndex !== undefined)
+			_drawRectangle(array, ctx, props.searchIndex);
+
+		// return to default
+		ctx.fillStyle = originalFillStyle;
 	}
-	return array;
 }
 
-function _drawRectangle(ctx, array, index) {
+function _drawRectangle(array, ctx, index) {
 	const rectWidth = ctx.canvas.width / array.length;
 	const rectHeight = (ctx.canvas.height / array.length) * array[index];
 
-	const halfWidth = ctx.canvas.width / 2;
-	const smallArrayBorderAdjust = array.length < halfWidth ? 1 : 0;
+	const canvasHalfWidth = ctx.canvas.width / 2;
+	const smallArrayBorderAdjust = array.length < canvasHalfWidth ? 1 : 0;
 
 	ctx.fillRect(
 		rectWidth * index,
@@ -87,4 +125,61 @@ function _initCanvasAndContext(canvasID, ctx, width, height) {
 		width: width,
 		height: height,
 	};
+}
+
+function _initArray(size) {
+	let arrayInit = new Array(size);
+	for (let i = 0; i < size; i++) {
+		arrayInit[i] = i + 1;
+	}
+	return arrayInit;
+}
+
+// ========================================
+// ============== ALGORITHMS ==============
+// ========================================
+
+async function algo_randomize(array, ctx) {
+	for (let i = 0; i < array.length; i++) {
+		const swapIndex = i + Math.floor(Math.random() * (array.length - i));
+		const displayProps = {
+			compareIndex: i,
+			searchIndex: swapIndex,
+			activeBounds: {
+				min: i,
+				max: array.length - 1,
+			},
+		};
+
+		await displayFunc(array, ctx, displayProps);
+
+		// Swap
+		const a = array[i];
+		array[i] = array[swapIndex];
+		array[swapIndex] = a;
+
+		await displayFunc(array, ctx, displayProps);
+	}
+	await displayFunc(array, ctx);
+}
+
+async function algo_gnome(array, ctx) {
+	let i = 0;
+	let props = {
+		compareIndex: i,
+	};
+
+	while (i < array.length) {
+		if (i == 0 || array[i] >= array[i - 1]) {
+			i++;
+		} else {
+			const a = array[i];
+			array[i] = array[i - 1];
+			array[i - 1] = a;
+			i--;
+		}
+		props.compareIndex = i;
+		await displayFunc(array, ctx, props);
+	}
+	await displayFunc(array, ctx);
 }
