@@ -8,7 +8,7 @@ const canvasWidth = 1000;
 const canvasHeight = 600;
 
 const sortSizeMaxPow = 8;
-const timeout = 100;
+const timeout = 1;
 
 let sortSize = 48;
 let sortingArray = [];
@@ -42,6 +42,8 @@ window.addEventListener("load", () => {
 		_drawArray(sortingArray, ctx);
 	});
 
+	//
+
 	document.getElementById("arr-shuffle").addEventListener("click", () => {
 		algo_shuffle(sortingArray, ctx);
 	});
@@ -49,11 +51,22 @@ window.addEventListener("load", () => {
 		algo_randomize(sortingArray, ctx);
 	});
 
+	//
+
+	document.getElementById("sort-slow").addEventListener("click", () => {
+		algo_slowsort(sortingArray, ctx);
+	});
+	document.getElementById("sort-stooge").addEventListener("click", () => {
+		algo_stooge(sortingArray, ctx);
+	});
+	document.getElementById("sort-selection").addEventListener("click", () => {
+		algo_selection(sortingArray, ctx);
+	});
 	document.getElementById("sort-gnome").addEventListener("click", () => {
 		algo_gnome(sortingArray, ctx);
 	});
-	document.getElementById("sort-stalin").addEventListener("click", () => {
-		algo_stalin(sortingArray, ctx);
+	document.getElementById("sort-insertion").addEventListener("click", () => {
+		algo_insertion(sortingArray, ctx);
 	});
 	document.getElementById("sort-quick").addEventListener("click", () => {
 		algo_quicksort(sortingArray, ctx);

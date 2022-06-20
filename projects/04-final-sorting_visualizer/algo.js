@@ -2,7 +2,65 @@
 // Real Sorts
 // ==========
 
-// Gnome Sort
+// Slowsort | O(n^( (log_2(n))/(n-k) ))
+async function algo_slowsort(array, ctx) {
+	if (await algo_validate(array, ctx)) {
+		return;
+	}
+
+	await algo_slowsort_recursive(array, ctx, 0, array.length - 1);
+
+	await display(array, ctx);
+	await algo_validate(array, ctx);
+}
+async function algo_slowsort_recursive(array, ctx, min, max) {
+	if (min >= max) {
+		return;
+	}
+
+	const mid = Math.floor((min + max) / 2);
+	await algo_slowsort_recursive(array, ctx, min, mid);
+	await algo_slowsort_recursive(array, ctx, mid + 1, max);
+
+	if (array[max] < array[mid]) {
+		await display(array, ctx, { compareIndex: mid, searchIndex: max });
+		swap(array, max, mid);
+	}
+	await algo_slowsort_recursive(array, ctx, min, max - 1);
+}
+
+// SLOW SORT, on data for visualizer it is easily the slowest
+// Stooge Sort | ~O(n^2.71) | O(n^(log(3) / log(1.5)))
+async function algo_stooge(array, ctx) {
+	if (await algo_validate(array, ctx)) {
+		return;
+	}
+
+	await algo_stooge_recursive(array, ctx, 0, array.length - 1);
+
+	await display(array, ctx);
+	await algo_validate(array, ctx);
+}
+async function algo_stooge_recursive(array, ctx, min, max) {
+	await display(array, ctx, {
+		compareIndex: min,
+		searchIndex: max,
+	});
+
+	if (array[min] > array[max]) {
+		swap(array, min, max);
+	}
+
+	const numElements = max - min + 1;
+	if (numElements >= 3) {
+		const t = Math.floor((max - min + 1) / 3);
+		await algo_stooge_recursive(array, ctx, min, max - t); // sort first 2/3rds
+		await algo_stooge_recursive(array, ctx, min + t, max); // sort second 2/3rds
+		await algo_stooge_recursive(array, ctx, min, max - t); // sort first 2/3rds again
+	}
+}
+
+// Gnome Sort | O(n^2)
 async function algo_gnome(array, ctx) {
 	if (await algo_validate(array, ctx)) {
 		return;
@@ -22,7 +80,92 @@ async function algo_gnome(array, ctx) {
 	await algo_validate(array, ctx);
 }
 
-// QuickSort
+// Selection Sort | O(n^2)
+async function algo_selection(array, ctx) {
+	if (await algo_validate(array, ctx)) {
+		return;
+	}
+
+	let props = {
+		activeBounds: {
+			min: 0,
+			max: array.length - 1,
+		},
+		compareIndex: 0,
+		searchIndex: 0,
+	};
+
+	for (let placeIndex = 0; placeIndex < array.length - 1; placeIndex++) {
+		let indexOfLowest = placeIndex;
+
+		props.activeBounds.min = placeIndex;
+		props.compareIndex = placeIndex;
+
+		for (let i = placeIndex; i < array.length; i++) {
+			props.searchIndex = i;
+
+			if (array[i] < array[indexOfLowest]) {
+				indexOfLowest = i;
+			}
+
+			await display(array, ctx, {
+				...props,
+				freeColors: [
+					{ color: color_blue, min: indexOfLowest, max: indexOfLowest },
+				],
+			});
+		}
+
+		props.searchIndex = indexOfLowest;
+
+		await display(array, ctx, props);
+		swap(array, placeIndex, indexOfLowest);
+	}
+
+	await algo_validate(array, ctx);
+}
+
+async function algo_insertion(array, ctx) {
+	if (await algo_validate(array, ctx)) {
+		return;
+	}
+
+	let props = {
+		activeBounds: {
+			min: 0,
+			max: 0,
+		},
+		compareIndex: 0,
+		searchIndex: 0,
+	};
+
+	for (let i = 1; i < array.length; i++) {
+		props.activeBounds.max = i;
+		props.compareIndex = i;
+		props.searchIndex = i - 1;
+		await display(array, ctx, { ...props });
+
+		if (array[i] > array[i - 1]) {
+			continue;
+		}
+
+		for (let j = i; j >= 0; j--) {
+			props.searchIndex = j;
+			await display(array, ctx, props);
+
+			if (array[j] <= array[j - 1]) {
+				swap(array, j, j - 1);
+			} else {
+				break;
+			}
+		}
+	}
+
+	await display(array, ctx);
+	await algo_validate(array, ctx);
+}
+
+// QuickSort O(n*log(n))
 async function algo_quicksort(array, ctx) {
 	if (await algo_validate(array, ctx)) {
 		return;
@@ -31,7 +174,6 @@ async function algo_quicksort(array, ctx) {
 	await algo_quicksort_recursive(array, ctx, 0, array.length - 1);
 	await algo_validate(array, ctx);
 }
-
 async function algo_quicksort_recursive(array, ctx, min, max) {
 	if (min >= max) {
 		return;
@@ -42,7 +184,6 @@ async function algo_quicksort_recursive(array, ctx, min, max) {
 	await algo_quicksort_recursive(array, ctx, min, pivotIndex - 1);
 	await algo_quicksort_recursive(array, ctx, pivotIndex + 1, max);
 }
-
 async function algo_quicksort_partition(array, ctx, min, max) {
 	if (min > max) {
 		return min;
@@ -83,11 +224,10 @@ async function algo_quicksort_partition(array, ctx, min, max) {
 	swap(array, min, highIndex);
 	return highIndex;
 }
-
 function _quicksortProps(min, max, lowIndex, highIndex) {
 	return {
-		activeBounds: { min: min, max: max },
 		compareIndex: min,
+		activeBounds: { min: min, max: max },
 		freeColors: [
 			{
 				color: color_blue,
@@ -103,14 +243,15 @@ function _quicksortProps(min, max, lowIndex, highIndex) {
 	};
 }
 
+// ==========
 // Joke Sorts
+// ==========
 
 // Bogo Sort - Check if array is in order. If it is not, randomize the entire array (and check again, etc). O(n!^n)
 // Bozo Sort - Check if array is in order. If it is not, swap two random elements. O(n!)
 // Stooge Sort - ... O(n^(log(3) - log(1.5)))
 
-// --- Sorts which do not actually function, despite being hilarious
-// Assumption Sort - Assume the list is sorted!
+// Assumption Sort - Assume the list is already sorted
 
 // Miracle Sort - Check if array is sorted. If not, wait a while and check again. Eventually, alpha particles flipping bits in the memory chips should result in a successful sort. Average time complexity == O(✝)
 

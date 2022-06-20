@@ -1,17 +1,18 @@
 = Passcodes:
-1) 
-2) 
+1) 476
+2) 800
 
 
 = Participation:
 1) Attended class, camera on
-2) 
-3) 
+2) In-class questions
+3) no lab :(
 
 
 = Self-Directed Learning:
-1) 
+1) I am living and breathing sorting algorithms
 
 
 = Current Project Progress:
-1) 
+1) more algorithms implemented
+2) spatial grouping of buttons by function
