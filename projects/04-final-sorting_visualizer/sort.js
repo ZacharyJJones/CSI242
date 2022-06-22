@@ -4,32 +4,67 @@ const color_blue = "#6495ED";
 const color_orange = "#FFBF00";
 const color_green = "#50C878";
 
-const timeout = 0;
+//
 
-let sortSize = 64;
 let sortingArray = [];
 
 const settings = {
-	displayType: "Bars", // can also be "Points"
-	randomizeType: "Shuffle", // Can also be "Randomize"
-	arraySizePow: 6,
-	displaySpeed: 1,
-	displayTimeout: 10,
+	displayType: "Bars", // ["Bars", "Points"]
+	randomizeType: "Shuffle", // ["Shuffle", "Randomize"]
+	arraySizePow: 6, // 2^6 == 64
+	displaySpeed: 1, // only 1 in every n frames are shown.
+	displayTimeout: 50, //
 };
+const settingsDefault = { ...settings };
+
+// ==========================
+
+function _setDisplayType(type) {
+	settings["displayType"] = type;
+	document.getElementById("set-displayType").innerText = type;
+}
+
+// function _setRandomizeType(type) {
+// 	settings["randomizeType"] = type;
+// 	document.getElementById("set-randomize").innerText = type;
+// }
+
+function _setArraySizePow(pow) {
+	settings["arraySizePow"] = clampNum(pow, 0, 31);
+	const displayText = `2^${pow} | ${Math.pow(2, pow)}`;
+	document.getElementById("set-arraySize").innerText = displayText;
+}
+
+function _setDisplaySpeed(speed) {
+	const value = Math.max(1, speed);
+	settings["displaySpeed"] = value;
+	document.getElementById("set-displaySpeed").innerText = `${value}x`;
+}
+
+function _setDisplayTimeout(timeout) {
+	const value = Math.max(0, timeout);
+	settings["displayTimeout"] = value;
+	document.getElementById("set-displayTimeout").innerText = `${value}ms`;
+}
 
 // ==========================
 
 window.addEventListener("load", () => {
+	_setDisplayType(settingsDefault["displayType"]);
+	// _setRandomizeType(settingsDefault["randomizeType"]);
+	_setArraySizePow(settingsDefault["arraySizePow"]);
+	_setDisplaySpeed(settingsDefault["displaySpeed"]);
+	_setDisplayTimeout(settingsDefault["displayTimeout"]);
+
 	const canvas = document.getElementById("sort-display");
-	_setArraySize(sortSize);
 	_refreshSortingArray(canvas);
+	_initButtons(canvas);
+});
 
-	// =============
-	// Button Hookup
-	// =============
-
+function _initButtons(canvas) {
 	//
 
+	// Display Type
 	document.getElementById("vis-bars").addEventListener("click", () => {
 		_setDisplayType(document.getElementById("vis-bars").innerText);
 		display(sortingArray, canvas, { show: true });
@@ -39,37 +74,50 @@ window.addEventListener("load", () => {
 		display(sortingArray, canvas, { show: true });
 	});
 
-	//
-
-	// document.getElementById("arr-shuffle").addEventListener("click", () => {
-	// 	_setRandomizeType(document.getElementById("arr-shuffle").innerText);
-	// });
-	// document.getElementById("arr-random").addEventListener("click", () => {
-	// 	_setRandomizeType(document.getElementById("arr-random").innerText);
-	// });
-
-	//
-
+	// Array Size
 	document.getElementById("arr-size-down").addEventListener("click", () => {
-		_setArraySize(sortSize / 2);
+		_setArraySizePow(settings["arraySizePow"] - 1);
 		_refreshSortingArray(canvas);
 	});
 	document.getElementById("arr-size-up").addEventListener("click", () => {
-		_setArraySize(sortSize * 2);
+		_setArraySizePow(settings["arraySizePow"] + 1);
 		_refreshSortingArray(canvas);
 	});
 	document.getElementById("arr-refresh").addEventListener("click", () => {
 		_refreshSortingArray(canvas);
 	});
 
-	//
+	// Speed Mult
+	document.getElementById("set-spd-reset").addEventListener("click", () => {
+		_setDisplaySpeed(settingsDefault["displaySpeed"]);
+	});
+	document.getElementById("set-spd-up").addEventListener("click", () => {
+		_setDisplaySpeed(settings["displaySpeed"] * 2);
+	});
 
+	// Display Delay
+	document.getElementById("set-timeout-down").addEventListener("click", () => {
+		_setDisplayTimeout(settings["displayTimeout"] - 10);
+	});
+	document.getElementById("set-timeout-reset").addEventListener("click", () => {
+		_setDisplayTimeout(settingsDefault["displayTimeout"]);
+	});
+	document.getElementById("set-timeout-up").addEventListener("click", () => {
+		_setDisplayTimeout(settings["displayTimeout"] + 10);
+	});
+
+	// Sorts
 	const sorts = [
+		// Slow -- O(n^2) or more
 		{ key: "sort-slow", val: algo_slowsort },
 		// { key: "sort-stooge", val: algo_stooge }, // too slow
 		{ key: "sort-selection", val: algo_selection },
 		{ key: "sort-gnome", val: algo_gnome },
-		{ key: "sort-insertion", val: algo_insertion },
+
+		// Middle -- Somewhere Between
+		{ key: "sort-insertion", val: algo_insertion }, // slightly better than other n^2 sorts
+
+		// Fast -- O(n log n)
 		{ key: "sort-quick", val: algo_quicksort },
 	];
 	sorts.forEach((sort) => {
@@ -77,7 +125,9 @@ window.addEventListener("load", () => {
 			_invokeSort(sortingArray, canvas, sort.val);
 		});
 	});
-});
+
+	//
+}
 
 // ====================================
 
@@ -103,7 +153,7 @@ async function _preSortRandomize(array, canvas) {
 }
 
 function _refreshSortingArray(canvas) {
-	sortingArray = _initArray(sortSize);
+	sortingArray = _initArray(Math.pow(2, settings["arraySizePow"]));
 	display(sortingArray, canvas, { show: true });
 }
 
@@ -116,18 +166,3 @@ function _initArray(size) {
 }
 
 // ====================================
-
-function _setArraySize(size) {
-	sortSize = clampNum(size, 1, Math.pow(2, 12));
-	settings[""];
-}
-
-function _setDisplayType(type) {
-	settings["displayType"] = type;
-	document.getElementById("set-displayType").innerText = type;
-}
-
-function _setRandomizeType(type) {
-	settings["randomizeType"] = type;
-	document.getElementById("set-randomize").innerText = type;
-}

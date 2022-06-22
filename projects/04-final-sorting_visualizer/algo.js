@@ -1,11 +1,80 @@
+// ==========
+// To-Do List
+// ==========
 /*
-	Need: Radix Sort, Merge sort
+	Need: Radix Sort, Merge sort, binary insertion sort, cocktail shaker sort
 */
-// ==========
-// Real Sorts
-// ==========
+
+// ===============
+// Util Algorithms
+// ===============
+
+// Shuffles around existing values in the array
+async function algo_util_shuffle(array, canvas) {
+	for (let i = 0; i < array.length; i++) {
+		const swapIndex = i + Math.floor(Math.random() * (array.length - i));
+		await display(array, canvas, {
+			compareIndex: i,
+			searchIndex: swapIndex,
+			activeBounds: {
+				min: i,
+				max: array.length - 1,
+			},
+		});
+
+		// Swap
+		swap(array, i, swapIndex);
+	}
+	await display(array, canvas);
+}
+
+// Places new randomized values in the array
+async function algo_util_randomize(array, canvas) {
+	for (let i = 0; i < array.length; i++) {
+		array[i] = Math.ceil(Math.random() * array.length);
+		await display(array, canvas, {
+			compareIndex: i,
+			activeBounds: {
+				min: i,
+				max: array.length - 1,
+			},
+		});
+	}
+	await display(array, canvas);
+}
+
+// Validates that an array is sorted
+async function algo_validate(array, canvas) {
+	for (let i = 1; i < array.length; i++) {
+		const prev = array[i - 1];
+		const curr = array[i];
+
+		if (prev > curr) {
+			await display(array, canvas, { show: true });
+			return false;
+		}
+
+		await display(array, canvas, {
+			freeColors: [
+				{
+					color: color_green,
+					min: 0,
+					max: i,
+				},
+			],
+		});
+	}
+
+	await display(array, canvas, { show: true });
+	return true;
+}
+
+// =================================
+// Real Sorts -- O(n^x) -- The Worst
+// =================================
 
 // Slowsort | O(n^( (log_2(n))/(n-k) ))
+// -- Behaves okay on inputs of size 64 or less. Slows down hugely for each step past 64.
 async function algo_slowsort(array, canvas) {
 	await algo_slowsort_recursive(array, canvas, 0, array.length - 1);
 }
@@ -25,8 +94,8 @@ async function algo_slowsort_recursive(array, canvas, min, max) {
 	await algo_slowsort_recursive(array, canvas, min, max - 1);
 }
 
-// SLOW SORT, on data for visualizer it is easily the slowest
 // Stooge Sort | ~O(n^2.71) | O(n^(log(3) / log(1.5)))
+// -- VERY SLOW, even on smaller input sizes.
 async function algo_stooge(array, canvas) {
 	await algo_stooge_recursive(array, canvas, 0, array.length - 1);
 }
@@ -48,6 +117,8 @@ async function algo_stooge_recursive(array, canvas, min, max) {
 		await algo_stooge_recursive(array, canvas, min, max - t); // sort first 2/3rds again
 	}
 }
+
+//
 
 // Gnome Sort | O(n^2)
 async function algo_gnome(array, canvas) {
@@ -102,6 +173,7 @@ async function algo_selection(array, canvas) {
 	}
 }
 
+// Insertion Sort | O(n^2) -- but typically outperforms other n^2 algorithms
 async function algo_insertion(array, canvas) {
 	let props = {
 		activeBounds: {
@@ -134,6 +206,10 @@ async function algo_insertion(array, canvas) {
 		}
 	}
 }
+
+// ====================================
+// Real Sorts -- O(n log n) -- The Best
+// ====================================
 
 // QuickSort O(n*log(n))
 async function algo_quicksort(array, canvas) {
@@ -239,68 +315,3 @@ function _quicksortProps(min, max, lowIndex, highIndex) {
 
 // Bogobogo Sort:
 // - Source: https://www.dangermouse.net/esoteric/bogobogosort.html
-
-// ===============
-// Util Algorithms
-// ===============
-
-// Shuffles around existing values in the array
-async function algo_util_shuffle(array, canvas) {
-	for (let i = 0; i < array.length; i++) {
-		const swapIndex = i + Math.floor(Math.random() * (array.length - i));
-		await display(array, canvas, {
-			compareIndex: i,
-			searchIndex: swapIndex,
-			activeBounds: {
-				min: i,
-				max: array.length - 1,
-			},
-		});
-
-		// Swap
-		swap(array, i, swapIndex);
-	}
-	await display(array, canvas);
-}
-
-// Randomizes values of all elements in array.
-// - smooth value gradient is not guaranteed.
-async function algo_util_randomize(array, canvas) {
-	for (let i = 0; i < array.length; i++) {
-		array[i] = Math.ceil(Math.random() * array.length);
-		await display(array, canvas, {
-			compareIndex: i,
-			activeBounds: {
-				min: i,
-				max: array.length - 1,
-			},
-		});
-	}
-	await display(array, canvas);
-}
-
-// Validates that an array is sorted
-async function algo_validate(array, canvas) {
-	for (let i = 1; i < array.length; i++) {
-		const prev = array[i - 1];
-		const curr = array[i];
-
-		if (prev > curr) {
-			await display(array, canvas, { show: true });
-			return false;
-		}
-
-		await display(array, canvas, {
-			freeColors: [
-				{
-					color: color_green,
-					min: 0,
-					max: i,
-				},
-			],
-		});
-	}
-
-	await display(array, canvas, { show: true });
-	return true;
-}

@@ -13,7 +13,7 @@
 	<title>Sorting Algorithm Visualizer</title>
 </head>
 
-<body class="body-center">
+<body class="center-col">
 
 	<header>
 		<!--  -->
@@ -22,20 +22,20 @@
 	<h1 class="center">Sorting Algorithm Visualizer</h1>
 
 	<section>
-		<div>
-			<h2 class="center">Parameters</h2>
-			<div class="center">
-				<div class="option-group">
-					<h3 class="center">Display Type</h3>
-					<p class="center setting" id="set-displayType">Bars</p>
-					<div class="center">
-						<button id="vis-bars">Bars</button>
-						<button id="vis-points">Points</button>
-					</div>
+		<h2 class="center">Parameters</h2>
+		<div class="center">
+
+			<div class="option-group">
+				<h3 class="center">Display Type</h3>
+				<p class="center setting" id="set-displayType">_</p>
+				<div class="center">
+					<button id="vis-bars">Bars</button>
+					<button id="vis-points">Points</button>
 				</div>
+			</div>
 
 
-				<!-- <div class="option-group">
+			<!-- <div class="option-group">
 					<h3 class="center">Pre-Sort</h3>
 					<p class="center setting" id="set-randomize">Shuffle</p>
 
@@ -49,56 +49,76 @@
 					</div>
 				</div> -->
 
+			<div class="option-group">
+				<h3 class="center">Array Size</h3>
+				<p class="center setting" id="set-arraySize">_</p>
 
-				<div class="option-group">
-					<h3 class="center">Array Size</h3>
-					<p class="center setting" id="set-arraySize">64</p>
-
-					<button id="arr-size-down">
-						Size -
-					</button>
-					<button id="arr-refresh">
-						Refresh
-					</button>
-					<button id="arr-size-up">
-						Size +
-					</button>
-				</div>
-
-
-				<div class="option-group">
-					<h3 class="center">Speed</h3>
-					<p class="center setting" id="set-speedMult">1x</p>
-
-					<button id="set-spd-reset">Reset</button>
-					<button id="set-spd-up">Increase</button>
-				</div>
+				<button id="arr-size-down">
+					Size -
+				</button>
+				<button id="arr-refresh">
+					Refresh
+				</button>
+				<button id="arr-size-up">
+					Size +
+				</button>
 			</div>
+
+
+			<div class="option-group">
+				<h3 class="center">Speed</h3>
+				<p class="center setting" id="set-displaySpeed">_</p>
+
+				<button id="set-spd-reset">Reset</button>
+				<button id="set-spd-up">++</button>
+			</div>
+
+
+			<div class="option-group">
+				<h3 class="center">Display Delay</h3>
+				<p class="center setting" id="set-displayTimeout">_</p>
+
+				<button id="set-timeout-down">--</button>
+				<button id="set-timeout-reset">Reset</button>
+				<button id="set-timeout-up">++</button>
+			</div>
+
 		</div>
 
+
 		<div>
+			<h2 class="center">Sorts</h2>
 			<div class="center">
-				<h2>Sorts</h2>
+				<div class="option-group center-col">
+					<h3 class="center">Slow | O(n^2)</h3>
+					<button id="sort-slow">
+						Slow
+					</button>
+					<!-- <button id="sort-stooge"> 
+						Stooge
+					 </button> -->
+					<button id="sort-selection">
+						Selection
+					</button>
+					<button id="sort-gnome">
+						Gnome
+					</button>
+				</div>
+				<div class="option-group  center-col">
+					<h3 class="center">Slow+</h3>
+					<button id="sort-insertion">
+						Insertion
+					</button>
+				</div>
+				<div class="option-group  center-col">
+					<h3 class="center">Fast | O(n log n)</h3>
+					<button id="sort-quick">
+						QuickSort
+					</button>
+				</div>
 			</div>
+
 			<div class="center">
-				<button id="sort-slow">
-					Slow
-				</button>
-				<!-- <button id="sort-stooge">
-					Stooge
-				</button> -->
-				<button id="sort-selection">
-					Selection
-				</button>
-				<button id="sort-gnome">
-					Gnome
-				</button>
-				<button id="sort-insertion">
-					Insertion
-				</button>
-				<button id="sort-quick">
-					QuickSort
-				</button>
 			</div>
 		</div>
 	</section>

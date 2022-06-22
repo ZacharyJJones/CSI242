@@ -12,7 +12,7 @@
 	align-items: center;
 }
 
-.body-center {
+.center-col {
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
