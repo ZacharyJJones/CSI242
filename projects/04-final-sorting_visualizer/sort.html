@@ -19,51 +19,60 @@
 		<!--  -->
 	</header>
 
+	<h1 class="center">Sorting Algorithm Visualizer</h1>
+
 	<section>
-
-		<h1 class="center">Sorting Algorithm Visualizer</h1>
 		<div>
+			<h2 class="center">Parameters</h2>
 			<div class="center">
-				<h2>Visualizer</h2>
-			</div>
-			<div class="center">
-				<p class="setting" id="set-displayType">Bars</p>
-			</div>
-			<div class="center">
-				<button id="vis-bars">Bars</button>
-				<button id="vis-points">Points</button>
-			</div>
+				<div class="option-group">
+					<h3 class="center">Display Type</h3>
+					<p class="center setting" id="set-displayType">Bars</p>
+					<div class="center">
+						<button id="vis-bars">Bars</button>
+						<button id="vis-points">Points</button>
+					</div>
+				</div>
 
-			<div class="center">
-				<h2>Parameters</h2>
-			</div>
-			<div class="center">
-				<button id="arr-size-down">
-					Halve Size
-				</button>
-				<button id="arr-refresh">
-					Refresh Array
-				</button>
-				<button id="arr-size-up">
-					Double Size
-				</button>
-			</div>
-		</div>
 
-		<div>
-			<div class="center">
-				<h2>Setup</h2>
-			</div>
-			<div class="center">
-				<p class="setting" id="set-randomize">Shuffle</p>
-			</div>
-			<div class="center">
-				<button id="arr-shuffle">
-					Shuffle
-				</button>
-				<button id="arr-random">
-					Randomize
-				</button>
+				<!-- <div class="option-group">
+					<h3 class="center">Pre-Sort</h3>
+					<p class="center setting" id="set-randomize">Shuffle</p>
+
+					<div class="center">
+						<button id="arr-shuffle">
+							Shuffle
+						</button>
+						<button id="arr-random">
+							Randomize
+						</button>
+					</div>
+				</div> -->
+
+
+				<div class="option-group">
+					<h3 class="center">Array Size</h3>
+					<p class="center setting" id="set-arraySize">64</p>
+
+					<button id="arr-size-down">
+						Size -
+					</button>
+					<button id="arr-refresh">
+						Refresh
+					</button>
+					<button id="arr-size-up">
+						Size +
+					</button>
+				</div>
+
+
+				<div class="option-group">
+					<h3 class="center">Speed</h3>
+					<p class="center setting" id="set-speedMult">1x</p>
+
+					<button id="set-spd-reset">Reset</button>
+					<button id="set-spd-up">Increase</button>
+				</div>
 			</div>
 		</div>
 

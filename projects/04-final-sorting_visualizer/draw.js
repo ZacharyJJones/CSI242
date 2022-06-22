@@ -4,12 +4,21 @@
 
 // ========================================
 
-function _canvasDimensions(canvas) {}
+let _displaySpeedSkipCounter = 0;
 
 // ========================================
 
 // Callback method for displaying state at each comparison
 async function display(array, canvas, props) {
+	if (props !== undefined && props.show === undefined) {
+		_displaySpeedSkipCounter++;
+		if (_displaySpeedSkipCounter % settings["displaySpeed"] !== 0) {
+			return;
+		} else {
+			_displaySpeedSkipCounter = 0;
+		}
+	}
+
 	canvas.width = canvas.clientWidth;
 	canvas.height = canvas.clientWidth / 2;
 
@@ -31,23 +40,43 @@ async function display(array, canvas, props) {
 		}
 	*/
 
-	let drawMethod = undefined;
+	let drawMethod;
 	const displayType = settings["displayType"];
-	if (displayType === "_Points") {
-		//
+	if (displayType === "Points") {
+		drawMethod = _drawPoint;
 	} else {
 		drawMethod = _drawBar;
 	}
 
 	_drawArray(array, context, drawMethod, props);
-	await new Promise((resolve) => setTimeout(resolve, timeout));
+	await new Promise((resolve) =>
+		setTimeout(resolve, settings["displayTimeout"])
+	);
 }
 
 function _drawArray(array, ctx, drawMethod, props) {
+	// one-time computation of properties important for drawing
+
+	const canvasHalfWidth = ctx.canvas.width / 2;
+	const drawProps = {
+		evenWidth: ctx.canvas.width / array.length,
+		evenHeight: ctx.canvas.height / array.length,
+		smallArrayBorderAdjust: array.length < canvasHalfWidth ? 1 : 0,
+	};
+
+	draw = (a) => {
+		drawMethod(array, ctx, a, drawProps);
+	};
+
+	/**
+	 *
+	 *
+	 */
+
 	// Basic White Rects
 	ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 	array.forEach((x, i) => {
-		drawMethod(array, ctx, i);
+		draw(i);
 	});
 
 	// If props are given, use them!
@@ -60,24 +89,22 @@ function _drawArray(array, ctx, drawMethod, props) {
 		if (props.activeBounds !== undefined) {
 			array.forEach((x, i) => {
 				if (i < props.activeBounds.min || props.activeBounds.max < i) {
-					drawMethod(array, ctx, i);
+					draw(i);
 				}
 			});
 		}
 
 		// Show compared indices
 		ctx.fillStyle = color_red;
-		if (props.compareIndex !== undefined)
-			drawMethod(array, ctx, props.compareIndex);
-		if (props.searchIndex !== undefined)
-			drawMethod(array, ctx, props.searchIndex);
+		if (props.compareIndex !== undefined) draw(props.compareIndex);
+		if (props.searchIndex !== undefined) draw(props.searchIndex);
 
 		// Show free colors
 		if (props.freeColors !== undefined) {
 			props.freeColors.forEach((item) => {
 				ctx.fillStyle = item.color;
 				for (let i = item.min; i <= item.max; i++) {
-					drawMethod(array, ctx, i);
+					draw(i);
 				}
 			});
 		}
@@ -87,17 +114,25 @@ function _drawArray(array, ctx, drawMethod, props) {
 	}
 }
 
-function _drawBar(array, ctx, index) {
-	const rectWidth = ctx.canvas.width / array.length;
-	const rectHeight = (ctx.canvas.height / array.length) * array[index];
-
-	const canvasHalfWidth = ctx.canvas.width / 2;
-	const smallArrayBorderAdjust = array.length < canvasHalfWidth ? 1 : 0;
-
+function _drawBar(
+	array,
+	ctx,
+	index,
+	{ evenWidth, evenHeight, smallArrayBorderAdjust }
+) {
 	ctx.fillRect(
-		rectWidth * index,
+		evenWidth * index,
 		0,
-		rectWidth - smallArrayBorderAdjust,
-		rectHeight - smallArrayBorderAdjust
+		evenWidth - smallArrayBorderAdjust,
+		evenHeight * array[index] - smallArrayBorderAdjust
+	);
+}
+
+function _drawPoint(array, ctx, index, { evenWidth, evenHeight }) {
+	ctx.fillRect(
+		evenWidth * index,
+		evenHeight * (array[index] - 1),
+		Math.max(1, evenWidth),
+		Math.max(1, evenHeight)
 	);
 }

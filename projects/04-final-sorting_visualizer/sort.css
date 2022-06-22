@@ -1,3 +1,11 @@
+:root {
+	--color-body: #f7f4ea;
+	--color-section: #f0efdd;
+	--color-option: #e0e0d1;
+}
+
+/*  */
+
 .center {
 	display: flex;
 	justify-content: center;
@@ -12,7 +20,7 @@
 }
 
 body {
-	background-color: #f7f4ea;
+	background-color: var(--color-body);
 }
 
 h1,
@@ -22,6 +30,24 @@ h2 {
 
 /*  */
 
+section {
+	width: 80%;
+
+	margin: 10px;
+
+	padding: 20px;
+	background-color: var(--color-section);
+}
+
+/*  */
+
+.option-group {
+	background-color: var(--color-option);
+
+	padding: 10px;
+	margin: 10px;
+}
+
 .setting {
 	font-size: 130%;
 	font-weight: bold;
@@ -30,17 +56,6 @@ h2 {
 	padding: 5px 20px;
 
 	border: 1px solid black;
-}
-
-/*  */
-
-section {
-	width: 80%;
-
-	margin: 20px 0px;
-
-	padding: 50px;
-	background-color: #f0efdd;
 }
 
 button {
@@ -62,9 +77,9 @@ canvas {
 }
 
 /* Media */
-
+/* 
 @media (min-width: 1250px) {
 	section {
 		width: 1000px;
 	}
-}
+} */

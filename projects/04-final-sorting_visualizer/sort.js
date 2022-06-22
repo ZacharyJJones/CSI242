@@ -4,9 +4,6 @@ const color_blue = "#6495ED";
 const color_orange = "#FFBF00";
 const color_green = "#50C878";
 
-// const canvasWidth = 1000;
-// const canvasHeight = 600;
-
 const timeout = 0;
 
 let sortSize = 64;
@@ -15,6 +12,9 @@ let sortingArray = [];
 const settings = {
 	displayType: "Bars", // can also be "Points"
 	randomizeType: "Shuffle", // Can also be "Randomize"
+	arraySizePow: 6,
+	displaySpeed: 1,
+	displayTimeout: 10,
 };
 
 // ==========================
@@ -32,12 +32,21 @@ window.addEventListener("load", () => {
 
 	document.getElementById("vis-bars").addEventListener("click", () => {
 		_setDisplayType(document.getElementById("vis-bars").innerText);
-		display(array, canvas);
+		display(sortingArray, canvas, { show: true });
 	});
 	document.getElementById("vis-points").addEventListener("click", () => {
 		_setDisplayType(document.getElementById("vis-points").innerText);
-		display(array, canvas);
+		display(sortingArray, canvas, { show: true });
 	});
+
+	//
+
+	// document.getElementById("arr-shuffle").addEventListener("click", () => {
+	// 	_setRandomizeType(document.getElementById("arr-shuffle").innerText);
+	// });
+	// document.getElementById("arr-random").addEventListener("click", () => {
+	// 	_setRandomizeType(document.getElementById("arr-random").innerText);
+	// });
 
 	//
 
@@ -51,15 +60,6 @@ window.addEventListener("load", () => {
 	});
 	document.getElementById("arr-refresh").addEventListener("click", () => {
 		_refreshSortingArray(canvas);
-	});
-
-	//
-
-	document.getElementById("arr-shuffle").addEventListener("click", () => {
-		algo_shuffle(sortingArray, canvas);
-	});
-	document.getElementById("arr-random").addEventListener("click", () => {
-		algo_randomize(sortingArray, canvas);
 	});
 
 	//
@@ -82,19 +82,29 @@ window.addEventListener("load", () => {
 // ====================================
 
 async function _invokeSort(array, canvas, sortMethod) {
-	// if (await algo_validate(array, canvas)) {
-	// 	return;
-	// }
-	await algo_shuffle(array, canvas);
+	jumpToId(canvas.id);
+	await _preSortRandomize(array, canvas);
 
 	await sortMethod(array, canvas);
 
 	await algo_validate(array, canvas);
 }
 
+async function _preSortRandomize(array, canvas) {
+	const setting = settings["randomizeType"];
+	let mixupFunction;
+	if (setting === "Randomize") {
+		mixupFunction = algo_util_randomize;
+	} else {
+		mixupFunction = algo_util_shuffle;
+	}
+
+	await mixupFunction(array, canvas);
+}
+
 function _refreshSortingArray(canvas) {
 	sortingArray = _initArray(sortSize);
-	display(sortingArray, canvas);
+	display(sortingArray, canvas, { show: true });
 }
 
 function _initArray(size) {
@@ -109,9 +119,15 @@ function _initArray(size) {
 
 function _setArraySize(size) {
 	sortSize = clampNum(size, 1, Math.pow(2, 12));
+	settings[""];
 }
 
 function _setDisplayType(type) {
 	settings["displayType"] = type;
 	document.getElementById("set-displayType").innerText = type;
+}
+
+function _setRandomizeType(type) {
+	settings["randomizeType"] = type;
+	document.getElementById("set-randomize").innerText = type;
 }

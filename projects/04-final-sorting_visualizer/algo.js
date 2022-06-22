@@ -245,7 +245,7 @@ function _quicksortProps(min, max, lowIndex, highIndex) {
 // ===============
 
 // Shuffles around existing values in the array
-async function algo_shuffle(array, canvas) {
+async function algo_util_shuffle(array, canvas) {
 	for (let i = 0; i < array.length; i++) {
 		const swapIndex = i + Math.floor(Math.random() * (array.length - i));
 		await display(array, canvas, {
@@ -265,7 +265,7 @@ async function algo_shuffle(array, canvas) {
 
 // Randomizes values of all elements in array.
 // - smooth value gradient is not guaranteed.
-async function algo_randomize(array, canvas) {
+async function algo_util_randomize(array, canvas) {
 	for (let i = 0; i < array.length; i++) {
 		array[i] = Math.ceil(Math.random() * array.length);
 		await display(array, canvas, {
@@ -286,7 +286,7 @@ async function algo_validate(array, canvas) {
 		const curr = array[i];
 
 		if (prev > curr) {
-			await display(array, canvas);
+			await display(array, canvas, { show: true });
 			return false;
 		}
 
@@ -301,6 +301,6 @@ async function algo_validate(array, canvas) {
 		});
 	}
 
-	await display(array, canvas);
+	await display(array, canvas, { show: true });
 	return true;
 }
