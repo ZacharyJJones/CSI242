@@ -6,89 +6,108 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" href="sort.css">
+	<script src="utils.js"></script>
 	<script src="draw.js"></script>
 	<script src="algo.js"></script>
 	<script src="sort.js"></script>
 	<title>Sorting Algorithm Visualizer</title>
 </head>
 
-<body>
-	<!-- 
-		baseline: canvas which displays sorting algorithm
-	 -->
-	<h1 class="center">Sorting Algorithm Visualizer</h1>
-	<div>
-		<div class="center">
-			<h2>Parameters</h2>
-		</div>
-		<div class="center">
-			<button id="arr-size-down">
-				Halve Size
-			</button>
-			<p>| |</p>
-			<button id="arr-refresh">
-				Refresh Array
-			</button>
-			<p>| |</p>
-			<button id="arr-size-up">
-				Double Size
-			</button>
-		</div>
-	</div>
+<body class="body-center">
 
-	<div>
-		<div class="center">
-			<h2>Setup</h2>
-		</div>
-		<div class="center">
-			<button id="arr-shuffle">
-				Shuffle
-			</button>
-			<p>| |</p>
-			<button id="arr-random">
-				Randomize
-			</button>
-		</div>
-	</div>
+	<header>
+		<!--  -->
+	</header>
 
-	<div>
-		<div class="center">
-			<h2>Sorts</h2>
+	<section>
+
+		<h1 class="center">Sorting Algorithm Visualizer</h1>
+		<div>
+			<div class="center">
+				<h2>Visualizer</h2>
+			</div>
+			<div class="center">
+				<p class="setting" id="set-displayType">Bars</p>
+			</div>
+			<div class="center">
+				<button id="vis-bars">Bars</button>
+				<button id="vis-points">Points</button>
+			</div>
+
+			<div class="center">
+				<h2>Parameters</h2>
+			</div>
+			<div class="center">
+				<button id="arr-size-down">
+					Halve Size
+				</button>
+				<button id="arr-refresh">
+					Refresh Array
+				</button>
+				<button id="arr-size-up">
+					Double Size
+				</button>
+			</div>
 		</div>
-		<div class="center">
-			<button id="sort-slow">
-				Slow Sort
-			</button>
-			<p>| |</p>
-			<button id="sort-stooge">
-				Stooge Sort
-			</button>
-			<p>| |</p>
-			<button id="sort-selection">
-				Selection Sort
-			</button>
-			<p>| |</p>
-			<button id="sort-gnome">
-				Gnome Sort
-			</button>
-			<p>| |</p>
-			<button id="sort-insertion">
-				Insertion Sort
-			</button>
-			<p>| |</p>
-			<button id="sort-quick">
-				QuickSort
-			</button>
+
+		<div>
+			<div class="center">
+				<h2>Setup</h2>
+			</div>
+			<div class="center">
+				<p class="setting" id="set-randomize">Shuffle</p>
+			</div>
+			<div class="center">
+				<button id="arr-shuffle">
+					Shuffle
+				</button>
+				<button id="arr-random">
+					Randomize
+				</button>
+			</div>
 		</div>
-	</div>
-	<br>
-	<div class="center">
-		<div class="canvas-bg">
+
+		<div>
+			<div class="center">
+				<h2>Sorts</h2>
+			</div>
+			<div class="center">
+				<button id="sort-slow">
+					Slow
+				</button>
+				<!-- <button id="sort-stooge">
+					Stooge
+				</button> -->
+				<button id="sort-selection">
+					Selection
+				</button>
+				<button id="sort-gnome">
+					Gnome
+				</button>
+				<button id="sort-insertion">
+					Insertion
+				</button>
+				<button id="sort-quick">
+					QuickSort
+				</button>
+			</div>
+		</div>
+	</section>
+
+	<section id="section-display">
+
+		<figure id="canvas-bg">
 			<canvas id="sort-display"></canvas>
-		</div>
+		</figure>
+	</section>
 
-	</div>
+
+	<footer>
+		<!--  -->
+	</footer>
 
 </body>
+
+
 
 </html>

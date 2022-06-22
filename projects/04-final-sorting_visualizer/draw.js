@@ -1,24 +1,53 @@
-// Callback method for displaying state at each comparison
-async function display(array, ctx, props) {
-	// props.activeBounds.min/max
-	// props.compareIndex (stays put)
-	// props.searchIndex (moves around)
-	// props.freeColors[] (array)
-	/* {
-		color: hex_code
-		min: int
-		max: int
-	} */
+// Below link was a huge help for figuring out how size the canvas
+// ... responsively and avoid blurring
+// https://www.jgibson.id.au/blog/responsive-canvas/
 
-	_drawArray(array, ctx, props);
+// ========================================
+
+function _canvasDimensions(canvas) {}
+
+// ========================================
+
+// Callback method for displaying state at each comparison
+async function display(array, canvas, props) {
+	canvas.width = canvas.clientWidth;
+	canvas.height = canvas.clientWidth / 2;
+
+	let context = canvas.getContext("2d");
+	context.fillStyle = "#FFF";
+	context.translate(0, canvas.height);
+	context.scale(1, -1);
+
+	/*
+		Available Props documenting here
+		props.activeBounds.min/max
+		props.compareIndex (stays put)
+		props.searchIndex (moves around)
+		props.freeColors[] (array)
+		{
+			color: hex_code
+			min: int
+			max: int
+		}
+	*/
+
+	let drawMethod = undefined;
+	const displayType = settings["displayType"];
+	if (displayType === "_Points") {
+		//
+	} else {
+		drawMethod = _drawBar;
+	}
+
+	_drawArray(array, context, drawMethod, props);
 	await new Promise((resolve) => setTimeout(resolve, timeout));
 }
 
-function _drawArray(array, ctx, props) {
+function _drawArray(array, ctx, drawMethod, props) {
 	// Basic White Rects
 	ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 	array.forEach((x, i) => {
-		_drawRectangle(array, ctx, i);
+		drawMethod(array, ctx, i);
 	});
 
 	// If props are given, use them!
@@ -31,7 +60,7 @@ function _drawArray(array, ctx, props) {
 		if (props.activeBounds !== undefined) {
 			array.forEach((x, i) => {
 				if (i < props.activeBounds.min || props.activeBounds.max < i) {
-					_drawRectangle(array, ctx, i);
+					drawMethod(array, ctx, i);
 				}
 			});
 		}
@@ -39,16 +68,16 @@ function _drawArray(array, ctx, props) {
 		// Show compared indices
 		ctx.fillStyle = color_red;
 		if (props.compareIndex !== undefined)
-			_drawRectangle(array, ctx, props.compareIndex);
+			drawMethod(array, ctx, props.compareIndex);
 		if (props.searchIndex !== undefined)
-			_drawRectangle(array, ctx, props.searchIndex);
+			drawMethod(array, ctx, props.searchIndex);
 
 		// Show free colors
 		if (props.freeColors !== undefined) {
 			props.freeColors.forEach((item) => {
 				ctx.fillStyle = item.color;
-				for (let j = item.min; j <= item.max; j++) {
-					_drawRectangle(array, ctx, j);
+				for (let i = item.min; i <= item.max; i++) {
+					drawMethod(array, ctx, i);
 				}
 			});
 		}
@@ -58,7 +87,7 @@ function _drawArray(array, ctx, props) {
 	}
 }
 
-function _drawRectangle(array, ctx, index) {
+function _drawBar(array, ctx, index) {
 	const rectWidth = ctx.canvas.width / array.length;
 	const rectHeight = (ctx.canvas.height / array.length) * array[index];
 
@@ -71,23 +100,4 @@ function _drawRectangle(array, ctx, index) {
 		rectWidth - smallArrayBorderAdjust,
 		rectHeight - smallArrayBorderAdjust
 	);
-}
-
-function _initCanvasAndContext(canvasID, ctx, width, height) {
-	let canvas = document.getElementById(canvasID);
-	canvas.setAttribute("width", `${width}px`);
-	canvas.setAttribute("height", `${height}px`);
-
-	// Setting up color and ref point
-	let context = canvas.getContext(ctx);
-	context.fillStyle = "#FFF";
-	context.translate(0, canvas.height);
-	context.scale(1, -1);
-
-	return {
-		canvas: canvas,
-		ctx: context,
-		width: width,
-		height: height,
-	};
 }
