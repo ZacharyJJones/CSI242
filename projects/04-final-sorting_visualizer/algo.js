@@ -2,7 +2,7 @@
 // To-Do List
 // ==========
 /*
-	Need: Radix Sort, Merge sort, binary insertion sort, cocktail shaker sort
+	Need: Radix Sort, Merge sort, binary insertion sort, cocktail shaker sort, heap sort
 */
 
 // ===============
@@ -198,7 +198,7 @@ async function algo_insertion(array, canvas) {
 			props.searchIndex = j;
 			await display(array, canvas, props);
 
-			if (array[j] <= array[j - 1]) {
+			if (array[j] < array[j - 1]) {
 				swap(array, j, j - 1);
 			} else {
 				break;
@@ -211,7 +211,59 @@ async function algo_insertion(array, canvas) {
 // Real Sorts -- O(n log n) -- The Best
 // ====================================
 
-// QuickSort O(n*log(n))
+// Merge Sort | O(n log n)
+async function algo_mergesort(array, canvas) {
+	await algo_mergesort_recursive(array, canvas, 0, array.length - 1);
+}
+async function algo_mergesort_recursive(array, canvas, min, max) {
+	if (min >= max) {
+		return;
+	}
+
+	const mid = Math.floor(min + (max - min) / 2);
+	await algo_mergesort_recursive(array, canvas, min, mid);
+	await algo_mergesort_recursive(array, canvas, mid + 1, max);
+
+	// And merge
+	await algo_mergesort_merge(array, canvas, min, mid, max);
+}
+async function algo_mergesort_merge(array, canvas, min, mid, max) {
+	let aIndex = min;
+	let bIndex = mid + 1;
+
+	// if already sorted
+	if (array[mid] <= array[bIndex]) {
+		return;
+	}
+
+	while (aIndex <= mid && bIndex <= max) {
+		if (array[aIndex] <= array[bIndex]) {
+			aIndex++;
+		} else {
+			let value = array[bIndex];
+			let shiftingIndex = bIndex;
+			bIndex++;
+
+			// shift value into place
+			while (shiftingIndex > aIndex) {
+				array[shiftingIndex] = array[shiftingIndex - 1];
+				shiftingIndex--;
+			}
+			array[aIndex] = value;
+			aIndex++;
+
+			// Update endpoint of "lower" section
+			mid++;
+		}
+
+		await display(array, canvas, {
+			compareIndex: aIndex,
+			searchIndex: bIndex,
+		});
+	}
+}
+
+// QuickSort | O(n log n)
 async function algo_quicksort(array, canvas) {
 	await algo_quicksort_recursive(array, canvas, 0, array.length - 1);
 }

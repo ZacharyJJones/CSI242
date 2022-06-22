@@ -1,5 +1,5 @@
-// Below link was a huge help for figuring out how size the canvas
-// ... responsively and avoid blurring
+// Below link was a huge help for figuring out
+// .. how to display responsively w/ canvas
 // https://www.jgibson.id.au/blog/responsive-canvas/
 
 // ========================================

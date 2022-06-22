@@ -118,6 +118,7 @@ function _initButtons(canvas) {
 		{ key: "sort-insertion", val: algo_insertion }, // slightly better than other n^2 sorts
 
 		// Fast -- O(n log n)
+		{ key: "sort-merge", val: algo_mergesort },
 		{ key: "sort-quick", val: algo_quicksort },
 	];
 	sorts.forEach((sort) => {
