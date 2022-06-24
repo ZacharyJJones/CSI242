@@ -30,7 +30,10 @@
 				<p class="center setting" id="set-displayType">_</p>
 				<div class="center">
 					<button id="vis-bars">Bars</button>
+					<button id="vis-pyramid">Pyramid</button>
 					<button id="vis-points">Points</button>
+					<button id="vis-circle">Circle</button>
+					<button id="vis-circle-slices">Circle-Slices</button>
 				</div>
 			</div>
 
@@ -88,12 +91,15 @@
 
 		<div>
 			<h2 class="center">Sorts</h2>
+
 			<div class="center">
+
 				<div class="option-group center-col">
 					<h3 class="center">Slow | O(n^2)</h3>
-					<button id="sort-slow">
+
+					<!-- <button id="sort-slow">
 						Slow
-					</button>
+					</button> -->
 					<!-- <button id="sort-stooge"> 
 						Stooge
 					 </button> -->
@@ -104,12 +110,15 @@
 						Selection
 					</button>
 				</div>
+
 				<div class="option-group  center-col">
-					<h3 class="center">Slow+</h3>
+					<h3 class="center">Slow+ | O(n^2)</h3>
+
 					<button id="sort-insertion">
 						Insertion
 					</button>
 				</div>
+
 				<div class="option-group  center-col">
 					<h3 class="center">Fast | O(n log n)</h3>
 
@@ -120,9 +129,15 @@
 						QuickSort
 					</button>
 				</div>
-			</div>
 
-			<div class="center">
+				<div class="option-group  center-col">
+					<h3 class="center">Extras</h3>
+
+					<button id="sort-">
+						RADIX
+					</button>
+				</div>
+
 			</div>
 		</div>
 	</section>

@@ -9,7 +9,7 @@ const color_green = "#50C878";
 let sortingArray = [];
 
 const settings = {
-	displayType: "Bars", // ["Bars", "Points"]
+	displayType: "Bars", // ["Bars", "Points", "Pyramid"]
 	randomizeType: "Shuffle", // ["Shuffle", "Randomize"]
 	arraySizePow: 6, // 2^6 == 64
 	displaySpeed: 1, // only 1 in every n frames are shown.
@@ -65,13 +65,19 @@ function _initButtons(canvas) {
 	//
 
 	// Display Type
-	document.getElementById("vis-bars").addEventListener("click", () => {
-		_setDisplayType(document.getElementById("vis-bars").innerText);
-		display(sortingArray, canvas, { show: true });
-	});
-	document.getElementById("vis-points").addEventListener("click", () => {
-		_setDisplayType(document.getElementById("vis-points").innerText);
-		display(sortingArray, canvas, { show: true });
+	const displays = [
+		"vis-bars",
+		"vis-pyramid",
+		"vis-points",
+		"vis-circle",
+		"vis-circle-slices",
+	];
+	displays.forEach((displayTypeId) => {
+		const element = document.getElementById(displayTypeId);
+		element.addEventListener("click", () => {
+			_setDisplayType(element.innerText);
+			display(sortingArray, canvas, { show: true });
+		});
 	});
 
 	// Array Size
@@ -109,7 +115,7 @@ function _initButtons(canvas) {
 	// Sorts
 	const sorts = [
 		// Slow -- O(n^2) or more
-		{ key: "sort-slow", val: algo_slowsort },
+		// { key: "sort-slow", val: algo_slowsort }, // too slow
 		// { key: "sort-stooge", val: algo_stooge }, // too slow
 		{ key: "sort-selection", val: algo_selection },
 		{ key: "sort-gnome", val: algo_gnome },

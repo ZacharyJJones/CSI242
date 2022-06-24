@@ -14,8 +14,8 @@ async function algo_util_shuffle(array, canvas) {
 	for (let i = 0; i < array.length; i++) {
 		const swapIndex = i + Math.floor(Math.random() * (array.length - i));
 		await display(array, canvas, {
-			compareIndex: i,
-			searchIndex: swapIndex,
+			active1: i,
+			active2: swapIndex,
 			activeBounds: {
 				min: i,
 				max: array.length - 1,
@@ -33,7 +33,7 @@ async function algo_util_randomize(array, canvas) {
 	for (let i = 0; i < array.length; i++) {
 		array[i] = Math.ceil(Math.random() * array.length);
 		await display(array, canvas, {
-			compareIndex: i,
+			active1: i,
 			activeBounds: {
 				min: i,
 				max: array.length - 1,
@@ -45,13 +45,14 @@ async function algo_util_randomize(array, canvas) {
 
 // Validates that an array is sorted
 async function algo_validate(array, canvas) {
+	let isSorted = true;
 	for (let i = 1; i < array.length; i++) {
 		const prev = array[i - 1];
 		const curr = array[i];
 
 		if (prev > curr) {
-			await display(array, canvas, { show: true });
-			return false;
+			isSorted = false;
+			break;
 		}
 
 		await display(array, canvas, {
@@ -66,7 +67,7 @@ async function algo_validate(array, canvas) {
 	}
 
 	await display(array, canvas, { show: true });
-	return true;
+	return isSorted;
 }
 
 // =================================
@@ -88,7 +89,7 @@ async function algo_slowsort_recursive(array, canvas, min, max) {
 	await algo_slowsort_recursive(array, canvas, mid + 1, max);
 
 	if (array[max] < array[mid]) {
-		await display(array, canvas, { compareIndex: mid, searchIndex: max });
+		await display(array, canvas, { active1: mid, active2: max });
 		swap(array, max, mid);
 	}
 	await algo_slowsort_recursive(array, canvas, min, max - 1);
@@ -101,8 +102,8 @@ async function algo_stooge(array, canvas) {
 }
 async function algo_stooge_recursive(array, canvas, min, max) {
 	await display(array, canvas, {
-		compareIndex: min,
-		searchIndex: max,
+		active1: min,
+		active2: max,
 	});
 
 	if (array[min] > array[max]) {
@@ -130,7 +131,7 @@ async function algo_gnome(array, canvas) {
 			swap(array, i, i - 1);
 			i--;
 		}
-		await display(array, canvas, { compareIndex: i });
+		await display(array, canvas, { active1: i });
 	}
 }
 
@@ -141,18 +142,18 @@ async function algo_selection(array, canvas) {
 			min: 0,
 			max: array.length - 1,
 		},
-		compareIndex: 0,
-		searchIndex: 0,
+		active1: 0,
+		active2: 0,
 	};
 
 	for (let placeIndex = 0; placeIndex < array.length - 1; placeIndex++) {
 		let indexOfLowest = placeIndex;
 
 		props.activeBounds.min = placeIndex;
-		props.compareIndex = placeIndex;
+		props.active1 = placeIndex;
 
 		for (let i = placeIndex; i < array.length; i++) {
-			props.searchIndex = i;
+			props.active2 = i;
 
 			if (array[i] < array[indexOfLowest]) {
 				indexOfLowest = i;
@@ -166,7 +167,7 @@ async function algo_selection(array, canvas) {
 			});
 		}
 
-		props.searchIndex = indexOfLowest;
+		props.active2 = indexOfLowest;
 
 		swap(array, placeIndex, indexOfLowest);
 		await display(array, canvas, props);
@@ -180,14 +181,14 @@ async function algo_insertion(array, canvas) {
 			min: 0,
 			max: 0,
 		},
-		compareIndex: 0,
-		searchIndex: 0,
+		active1: 0,
+		active2: 0,
 	};
 
 	for (let i = 1; i < array.length; i++) {
 		props.activeBounds.max = i;
-		props.compareIndex = i;
-		props.searchIndex = i - 1;
+		props.active1 = i;
+		props.active2 = i - 1;
 		await display(array, canvas, { ...props });
 
 		if (array[i] > array[i - 1]) {
@@ -195,7 +196,7 @@ async function algo_insertion(array, canvas) {
 		}
 
 		for (let j = i; j >= 0; j--) {
-			props.searchIndex = j;
+			props.active2 = j;
 			await display(array, canvas, props);
 
 			if (array[j] < array[j - 1]) {
@@ -257,8 +258,8 @@ async function algo_mergesort_merge(array, canvas, min, mid, max) {
 		}
 
 		await display(array, canvas, {
-			compareIndex: aIndex,
-			searchIndex: bIndex,
+			active1: aIndex,
+			active2: bIndex,
 		});
 	}
 }
@@ -331,7 +332,7 @@ async function algo_quicksort_partition(array, canvas, min, max) {
 }
 function _quicksortProps(min, max, lowIndex, highIndex) {
 	return {
-		compareIndex: min,
+		active1: min,
 		activeBounds: { min: min, max: max },
 		freeColors: [
 			{
