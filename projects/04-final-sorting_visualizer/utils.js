@@ -46,20 +46,9 @@ function getCircleIndexDiffScalar(array, index) {
 	const goalIndex = array[index] - 1;
 	const rawDiff = Math.abs(index - goalIndex);
 	const diffFromGoal = halfLength - Math.abs(halfLength - rawDiff);
-	console.log(diffFromGoal);
 	const t = diffFromGoal / halfLength;
 	return 1.0 - t;
 }
-
-const a = 30;
-const b = 13;
-let c = new Array(a);
-for (let i = 0; i < c.length; i++) {
-	c[i] = b;
-}
-c.forEach((x, i) => {
-	getCircleIndexDiffScalar(c, i);
-});
 
 function addCoords(a, b) {
 	return { x: a.x + b.x, y: a.y + b.y };
