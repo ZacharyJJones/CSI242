@@ -42,12 +42,24 @@ function getCircleCoords(t) {
 }
 
 function getCircleIndexDiffScalar(array, index) {
-	// half length ~= 180 degrees
 	const halfLength = array.length / 2;
-	const indexDiff = Math.abs(array[index] - index);
-	const diffT = (indexDiff % halfLength) / halfLength;
-	return 1.0 - diffT;
+	const goalIndex = array[index] - 1;
+	const rawDiff = Math.abs(index - goalIndex);
+	const diffFromGoal = halfLength - Math.abs(halfLength - rawDiff);
+	console.log(diffFromGoal);
+	const t = diffFromGoal / halfLength;
+	return 1.0 - t;
 }
+
+const a = 30;
+const b = 13;
+let c = new Array(a);
+for (let i = 0; i < c.length; i++) {
+	c[i] = b;
+}
+c.forEach((x, i) => {
+	getCircleIndexDiffScalar(c, i);
+});
 
 function addCoords(a, b) {
 	return { x: a.x + b.x, y: a.y + b.y };
@@ -55,4 +67,22 @@ function addCoords(a, b) {
 
 function multCoords(coord, mult) {
 	return { x: coord.x * mult.x, y: coord.y * mult.y };
+}
+
+function lerp(numA, numB, t) {
+	return numA + t * (numB - numA);
+}
+
+// https://stackoverflow.com/questions/36721830/convert-hsl-to-rgb-and-hex
+function hslToHex(h, s, l) {
+	l /= 100;
+	const a = (s * Math.min(l, 1 - l)) / 100;
+	const f = (n) => {
+		const k = (n + h / 30) % 12;
+		const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+		return Math.round(255 * color)
+			.toString(16)
+			.padStart(2, "0"); // convert to Hex and prefix "0" if needed
+	};
+	return `#${f(0)}${f(8)}${f(4)}`;
 }

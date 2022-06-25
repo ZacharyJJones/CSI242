@@ -9,11 +9,12 @@ const color_green = "#50C878";
 let sortingArray = [];
 
 const settings = {
-	displayType: "Bars", // ["Bars", "Points", "Pyramid"]
-	randomizeType: "Shuffle", // ["Shuffle", "Randomize"]
+	displayType: "Bars",
+	colorType: "Monochrome",
+	randomizeType: "Shuffle",
 	arraySizePow: 6, // 2^6 == 64
 	displaySpeed: 1, // only 1 in every n frames are shown.
-	displayTimeout: 50, //
+	displayTimeout: 50, // timeout between drawing
 };
 const settingsDefault = { ...settings };
 
@@ -22,6 +23,11 @@ const settingsDefault = { ...settings };
 function _setDisplayType(type) {
 	settings["displayType"] = type;
 	document.getElementById("set-displayType").innerText = type;
+}
+
+function _setColorType(type) {
+	settings["colorType"] = type;
+	document.getElementById("set-colorType").innerText = type;
 }
 
 // function _setRandomizeType(type) {
@@ -51,6 +57,7 @@ function _setDisplayTimeout(timeout) {
 
 window.addEventListener("load", () => {
 	_setDisplayType(settingsDefault["displayType"]);
+	_setColorType(settingsDefault["colorType"]);
 	// _setRandomizeType(settingsDefault["randomizeType"]);
 	_setArraySizePow(settingsDefault["arraySizePow"]);
 	_setDisplaySpeed(settingsDefault["displaySpeed"]);
@@ -70,12 +77,24 @@ function _initButtons(canvas) {
 		"vis-pyramid",
 		"vis-points",
 		"vis-circle",
+		"vis-circle-spiral",
 		"vis-circle-slices",
+		"vis-circle-slices-spiral",
 	];
 	displays.forEach((displayTypeId) => {
 		const element = document.getElementById(displayTypeId);
 		element.addEventListener("click", () => {
 			_setDisplayType(element.innerText);
+			display(sortingArray, canvas, { show: true });
+		});
+	});
+
+	// Display Color
+	const colors = ["vis-color-mono", "vis-color-rgb"];
+	colors.forEach((colorTypeId) => {
+		const element = document.getElementById(colorTypeId);
+		element.addEventListener("click", () => {
+			_setColorType(element.innerText);
 			display(sortingArray, canvas, { show: true });
 		});
 	});

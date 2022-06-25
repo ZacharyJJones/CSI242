@@ -4,9 +4,13 @@
 
 // ========================================
 
+const _drawSettings = {
+	circleSpiralMinT: 0.33,
+};
+
 let _displaySpeedSkipCounter = 0;
 
-const _drawPropsSchema = {
+const _colorPropsSchema = {
 	active1: 0, // red
 	active2: 23, // red
 	activeBounds: {
@@ -36,9 +40,17 @@ const _drawInfo = {
 		type: "circle",
 		func: _drawCircle,
 	},
+	"Circle-Spiral": {
+		type: "circle",
+		func: _drawCircleSpiral,
+	},
 	"Circle-Slices": {
 		type: "circle",
 		func: _drawCircleSlices,
+	},
+	"Circle-Slices-Spiral": {
+		type: "circle",
+		func: _drawCircleSlicesSpiral,
 	},
 };
 
@@ -47,28 +59,35 @@ const _propsMethods = {
 	circle: _getCircleProps,
 };
 
+// hue is determined by value of item in array,
+// ... not the index.
+const _hslColorSettings = {
+	// 90 & 90 == pastel
+	// 90 & 50 == normal
+	sat: 90,
+	lum: 50,
+};
+
 // ========================================
 
 // Callback method for displaying state at each comparison
 async function display(array, canvas, colorProps) {
-	if (_isSkip(colorProps)) {
+	if (_skipDrawing(colorProps)) {
 		return;
 	}
 
-	canvas.width = canvas.clientWidth;
-	canvas.height = canvas.clientWidth / 2;
-	let context = canvas.getContext("2d");
-	context.fillStyle = "#FFF";
-	context.translate(0, canvas.height);
-	context.scale(1, -1);
-	context.clearRect(0, 0, canvas.width, canvas.height);
+	if (settings["colorType"] === "RGB") {
+		colorProps = _rgbColorProps(array, colorProps);
+	}
+
+	const ctx = _initCanvasContext(canvas);
 
 	// Set up for draw
 	const drawInfo = _drawInfo[settings["displayType"]];
 	const drawMethod = drawInfo.func;
-	const drawProps = _propsMethods[drawInfo.type](array, context);
+	const drawProps = _propsMethods[drawInfo.type](array, ctx);
 
-	_drawArray(array, context, drawMethod, drawProps, colorProps);
+	_drawArray(array, ctx, drawMethod, drawProps, colorProps);
 	await new Promise((resolve) =>
 		setTimeout(resolve, settings["displayTimeout"])
 	);
@@ -166,7 +185,7 @@ function _drawPoint(array, ctx, index, { evenWidth, evenHeight }) {
 	);
 }
 
-// Circle (Points)
+// Circle Points
 function _drawCircle(
 	array,
 	ctx,
@@ -179,29 +198,120 @@ function _drawCircle(
 	const currT = multCoords(curr, { x: t, y: t });
 	const { x, y } = addCoords(circleCenter, multCoords(circleSize, currT));
 
-	ctx.fillRect(x - drawSizeHalf, y - drawSizeHalf, drawSize, drawSize);
+	// ctx.fillRect(x - drawSizeHalf, y - drawSizeHalf, drawSize, drawSize);
+	_ctxDrawCircle(ctx, x, y, drawSizeHalf);
 }
 
-// Circle (Slices)
+// Circle Slices
 function _drawCircleSlices(
 	array,
 	ctx,
 	index,
 	{ circleCenter, circleSize, drawSize, drawSizeHalf }
 ) {
-	const curr = getCircleCoords(i / array.length);
-	const next = getCircleCoords((i + 1) / array.length);
+	const t = getCircleIndexDiffScalar(array, index);
 
-	const t = index / array.length;
+	const curr = getCircleCoords(index / array.length);
+	const currT = multCoords(curr, { x: t, y: t });
+	const { x: currX, y: currY } = addCoords(
+		circleCenter,
+		multCoords(circleSize, currT)
+	);
+
+	const next = getCircleCoords((index + 1) / array.length);
+	const nextT = multCoords(next, { x: t, y: t });
+	const { x: nextX, y: nextY } = addCoords(
+		circleCenter,
+		multCoords(circleSize, nextT)
+	);
+
 	// need 3 coords to make a triangle.
+	ctx.beginPath();
+	ctx.moveTo(circleCenter.x, circleCenter.y);
+	ctx.lineTo(currX, currY);
+	ctx.lineTo(nextX, nextY);
+	ctx.closePath();
+	ctx.fill();
+}
+
+// Circle Spiral Points
+function _drawCircleSpiral(
+	array,
+	ctx,
+	index,
+	{ circleCenter, circleSize, drawSize, drawSizeHalf }
+) {
+	const t = lerp(
+		_drawSettings["circleSpiralMinT"],
+		1,
+		array[index] / array.length
+	);
+
+	const curr = getCircleCoords(index / array.length);
+	const currT = multCoords(curr, { x: t, y: t });
+	const { x, y } = addCoords(circleCenter, multCoords(circleSize, currT));
+
+	// ctx.fillRect(x - drawSizeHalf, y - drawSizeHalf, drawSize, drawSize);
+	_ctxDrawCircle(ctx, x, y, drawSizeHalf);
+}
+
+// Circle Spiral Slices
+function _drawCircleSlicesSpiral(
+	array,
+	ctx,
+	index,
+	{ circleCenter, circleSize, drawSize, drawSizeHalf }
+) {
+	const t = lerp(
+		_drawSettings["circleSpiralMinT"],
+		1,
+		array[index] / array.length
+	);
+
+	const curr = getCircleCoords(index / array.length);
+	const currT = multCoords(curr, { x: t, y: t });
+	const { x: currX, y: currY } = addCoords(
+		circleCenter,
+		multCoords(circleSize, currT)
+	);
+
+	const next = getCircleCoords((index + 1) / array.length);
+	const nextT = multCoords(next, { x: t, y: t });
+	const { x: nextX, y: nextY } = addCoords(
+		circleCenter,
+		multCoords(circleSize, nextT)
+	);
+
+	// need 3 coords to make a triangle.
+	ctx.beginPath();
+	ctx.moveTo(circleCenter.x, circleCenter.y);
+	ctx.lineTo(currX, currY);
+	ctx.lineTo(nextX, nextY);
+	ctx.closePath();
+	ctx.fill();
 }
 
 // ===========
 // == Utils ==
 // ===========
 
-function _isSkip(props) {
-	if (props !== undefined && props.show === undefined) {
+function _initCanvasContext(canvas) {
+	// Responsive Resize
+	canvas.width = canvas.clientWidth;
+	canvas.height = canvas.clientWidth / 2;
+
+	// Context props
+	let context = canvas.getContext("2d");
+	context.fillStyle = "#FFF";
+	context.translate(0, canvas.height);
+	context.scale(1, -1);
+	context.clearRect(0, 0, canvas.width, canvas.height);
+
+	return context;
+}
+
+function _skipDrawing(colorProps) {
+	if (colorProps !== undefined && colorProps.show === undefined) {
 		_displaySpeedSkipCounter++;
 		if (_displaySpeedSkipCounter % settings["displaySpeed"] !== 0) {
 			return true;
@@ -247,4 +357,60 @@ function _getCircleProps(array, ctx) {
 		drawSize: drawSize,
 		drawSizeHalf: drawSize / 2,
 	};
+}
+
+function _ctxDrawCircle(ctx, x, y, radius) {
+	ctx.beginPath();
+	ctx.ellipse(x, y, radius, radius, 0, 0, twoPI);
+	ctx.fill();
+}
+
+//
+function _rgbColorProps(array, colorProps) {
+	if (colorProps === undefined) {
+		return undefined;
+	}
+
+	let freeColors = [];
+
+	array.forEach((a, i) => {
+		const hue = Math.floor(lerp(0, 360, array[i] / array.length));
+		freeColors.push({
+			color: hslToHex(hue, _hslColorSettings.sat, _hslColorSettings.lum),
+			min: i,
+			max: i,
+		});
+	});
+
+	if (colorProps.active1 !== undefined)
+		freeColors.push({
+			color: "#FFF",
+			min: colorProps.active1,
+			max: colorProps.active1,
+		});
+
+	if (colorProps.active2 !== undefined)
+		freeColors.push({
+			color: "#FFF",
+			min: colorProps.active2,
+			max: colorProps.active2,
+		});
+
+	// darken inactive area
+	const bounds = colorProps.activeBounds;
+	if (bounds !== undefined) {
+		const lowLum = _hslColorSettings.lum * 0.8;
+		array.forEach((a, i) => {
+			if (!isInBounds(i, bounds)) {
+				const hue = Math.floor(lerp(0, 360, array[i] / array.length));
+				freeColors.push({
+					color: hslToHex(hue, _hslColorSettings.sat, lowLum),
+					min: i,
+					max: i,
+				});
+			}
+		});
+	}
+
+	return { freeColors: freeColors };
 }
