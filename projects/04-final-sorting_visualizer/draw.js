@@ -11,8 +11,7 @@ const _drawSettings = {
 let _displaySpeedSkipCounter = 0;
 
 const _colorPropsSchema = {
-	active1: 0, // red
-	active2: 23, // red
+	activeIndices: [], // red
 	activeBounds: {
 		min: 0,
 		max: 99,
@@ -25,43 +24,46 @@ const _colorPropsSchema = {
 
 const _drawInfo = {
 	Bars: {
-		type: "linear",
+		color: "Monochrome",
+		props: _getLinearProps,
 		func: _drawBar,
 	},
 	Pyramid: {
-		type: "linear",
+		color: "Monochrome",
+		props: _getLinearProps,
 		func: _drawPyramid,
 	},
 	Points: {
-		type: "linear",
+		color: "Monochrome",
+		props: _getLinearProps,
 		func: _drawPoint,
 	},
+
 	Circle: {
-		type: "circle",
+		color: "RGB",
+		props: _getCircleProps,
 		func: _drawCircle,
 	},
 	"Circle-Spiral": {
-		type: "circle",
+		color: "Monochrome",
+		props: _getCircleProps,
 		func: _drawCircleSpiral,
 	},
 	"Circle-Slices": {
-		type: "circle",
+		color: "RGB",
+		props: _getCircleProps,
 		func: _drawCircleSlices,
 	},
 	"Circle-Slices-Spiral": {
-		type: "circle",
+		color: "Monochrome",
+		props: _getCircleProps,
 		func: _drawCircleSlicesSpiral,
 	},
 };
 
-const _propsMethods = {
-	linear: _getLinearProps,
-	circle: _getCircleProps,
-};
-
 // hue is determined by value of item in array,
 // ... not the index.
-const _hslColorSettings = {
+const _hslSettings = {
 	// 90 & 90 == pastel
 	// 90 & 50 == normal
 	sat: 90,
@@ -76,18 +78,15 @@ async function display(array, canvas, colorProps) {
 		return;
 	}
 
-	if (settings["colorType"] === "RGB") {
+	const ctx = _initCanvasContext(canvas);
+
+	const drawInfo = _drawInfo[settings["displayType"]];
+
+	if (drawInfo.color === "RGB") {
 		colorProps = _rgbColorProps(array, colorProps);
 	}
 
-	const ctx = _initCanvasContext(canvas);
-
-	// Set up for draw
-	const drawInfo = _drawInfo[settings["displayType"]];
-	const drawMethod = drawInfo.func;
-	const drawProps = _propsMethods[drawInfo.type](array, ctx);
-
-	_drawArray(array, ctx, drawMethod, drawProps, colorProps);
+	_drawArray(array, ctx, drawInfo.func, drawInfo.props(array, ctx), colorProps);
 	await new Promise((resolve) =>
 		setTimeout(resolve, settings["displayTimeout"])
 	);
@@ -121,9 +120,12 @@ function _drawArray(array, ctx, drawMethod, drawProps, colorProps) {
 	}
 
 	// Show compared indices
-	ctx.fillStyle = color_red;
-	if (colorProps.active1 !== undefined) draw(colorProps.active1);
-	if (colorProps.active2 !== undefined) draw(colorProps.active2);
+	if (colorProps.activeIndices !== undefined) {
+		ctx.fillStyle = color_red;
+		colorProps.activeIndices.forEach((x, i) => {
+			draw(x);
+		});
+	}
 
 	// Show free colors
 	if (colorProps.freeColors !== undefined) {
@@ -209,20 +211,16 @@ function _drawCircleSlices(
 	index,
 	{ circleCenter, circleSize, drawSize, drawSizeHalf }
 ) {
-	const t = getCircleIndexDiffScalar(array, index);
-
-	const curr = getCircleCoords(index / array.length);
-	const currT = multCoords(curr, { x: t, y: t });
+	const currBase = getCircleCoords(index / array.length);
 	const { x: currX, y: currY } = addCoords(
 		circleCenter,
-		multCoords(circleSize, currT)
+		multCoords(circleSize, currBase)
 	);
 
-	const next = getCircleCoords((index + 1) / array.length);
-	const nextT = multCoords(next, { x: t, y: t });
+	const nextBase = getCircleCoords((index + 1) / array.length);
 	const { x: nextX, y: nextY } = addCoords(
 		circleCenter,
-		multCoords(circleSize, nextT)
+		multCoords(circleSize, nextBase)
 	);
 
 	// need 3 coords to make a triangle.
@@ -367,44 +365,50 @@ function _ctxDrawCircle(ctx, x, y, radius) {
 
 //
 function _rgbColorProps(array, colorProps) {
-	if (colorProps === undefined) {
-		return undefined;
-	}
-
 	let freeColors = [];
 
 	array.forEach((a, i) => {
 		const hue = Math.floor(lerp(0, 360, array[i] / array.length));
 		freeColors.push({
-			color: hslToHex(hue, _hslColorSettings.sat, _hslColorSettings.lum),
+			color: hslToHex(hue, _hslSettings.sat, _hslSettings.lum),
 			min: i,
 			max: i,
 		});
 	});
 
-	if (colorProps.active1 !== undefined)
-		freeColors.push({
-			color: "#FFF",
-			min: colorProps.active1,
-			max: colorProps.active1,
-		});
+	if (colorProps === undefined) {
+		return { freeColors: freeColors };
+	}
 
-	if (colorProps.active2 !== undefined)
-		freeColors.push({
-			color: "#FFF",
-			min: colorProps.active2,
-			max: colorProps.active2,
+	if (colorProps.activeIndices !== undefined) {
+		colorProps.activeIndices.forEach((x) => {
+			freeColors.push({
+				color: "#FFF",
+				min: x,
+				max: x,
+			});
 		});
+	}
+
+	if (colorProps.freeColors !== undefined) {
+		colorProps.freeColors.forEach((x, i) => {
+			freeColors.push({
+				color: "#FFF",
+				min: x.min,
+				max: x.max,
+			});
+		});
+	}
 
 	// darken inactive area
 	const bounds = colorProps.activeBounds;
 	if (bounds !== undefined) {
-		const lowLum = _hslColorSettings.lum * 0.8;
+		const lowLum = _hslSettings.lum * 0.8;
 		array.forEach((a, i) => {
 			if (!isInBounds(i, bounds)) {
 				const hue = Math.floor(lerp(0, 360, array[i] / array.length));
 				freeColors.push({
-					color: hslToHex(hue, _hslColorSettings.sat, lowLum),
+					color: hslToHex(hue, _hslSettings.sat, lowLum),
 					min: i,
 					max: i,
 				});

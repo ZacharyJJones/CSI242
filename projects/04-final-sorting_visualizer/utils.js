@@ -75,3 +75,11 @@ function hslToHex(h, s, l) {
 	};
 	return `#${f(0)}${f(8)}${f(4)}`;
 }
+
+function floorToPowerOfTwo(number) {
+	let lastPowOfTwo = 1;
+	while (lastPowOfTwo < number) {
+		lastPowOfTwo *= 2;
+	}
+	return lastPowOfTwo / 2;
+}

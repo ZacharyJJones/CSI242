@@ -14,8 +14,7 @@ async function algo_util_shuffle(array, canvas) {
 	for (let i = 0; i < array.length; i++) {
 		const swapIndex = i + Math.floor(Math.random() * (array.length - i));
 		await display(array, canvas, {
-			active1: i,
-			active2: swapIndex,
+			activeIndices: [i, swapIndex],
 			activeBounds: {
 				min: i,
 				max: array.length - 1,
@@ -33,7 +32,7 @@ async function algo_util_randomize(array, canvas) {
 	for (let i = 0; i < array.length; i++) {
 		array[i] = Math.ceil(Math.random() * array.length);
 		await display(array, canvas, {
-			active1: i,
+			activeIndices: [i],
 			activeBounds: {
 				min: i,
 				max: array.length - 1,
@@ -89,7 +88,7 @@ async function algo_slowsort_recursive(array, canvas, min, max) {
 	await algo_slowsort_recursive(array, canvas, mid + 1, max);
 
 	if (array[max] < array[mid]) {
-		await display(array, canvas, { active1: mid, active2: max });
+		await display(array, canvas, { activeIndices: [mid, max] });
 		swap(array, max, mid);
 	}
 	await algo_slowsort_recursive(array, canvas, min, max - 1);
@@ -101,10 +100,7 @@ async function algo_stooge(array, canvas) {
 	await algo_stooge_recursive(array, canvas, 0, array.length - 1);
 }
 async function algo_stooge_recursive(array, canvas, min, max) {
-	await display(array, canvas, {
-		active1: min,
-		active2: max,
-	});
+	await display(array, canvas, { activeIndices: [min, max] });
 
 	if (array[min] > array[max]) {
 		swap(array, min, max);
@@ -131,29 +127,28 @@ async function algo_gnome(array, canvas) {
 			swap(array, i, i - 1);
 			i--;
 		}
-		await display(array, canvas, { active1: i });
+		await display(array, canvas, { activeIndices: [i] });
 	}
 }
 
 // Selection Sort | O(n^2)
 async function algo_selection(array, canvas) {
 	let props = {
+		activeIndices: [0, 0],
 		activeBounds: {
 			min: 0,
 			max: array.length - 1,
 		},
-		active1: 0,
-		active2: 0,
 	};
 
 	for (let placeIndex = 0; placeIndex < array.length - 1; placeIndex++) {
 		let indexOfLowest = placeIndex;
 
 		props.activeBounds.min = placeIndex;
-		props.active1 = placeIndex;
+		props.activeIndices[0] = placeIndex;
 
 		for (let i = placeIndex; i < array.length; i++) {
-			props.active2 = i;
+			props.activeIndices[1] = i;
 
 			if (array[i] < array[indexOfLowest]) {
 				indexOfLowest = i;
@@ -167,37 +162,230 @@ async function algo_selection(array, canvas) {
 			});
 		}
 
-		props.active2 = indexOfLowest;
+		props.activeIndices[1] = indexOfLowest;
 
 		swap(array, placeIndex, indexOfLowest);
 		await display(array, canvas, props);
 	}
 }
 
+async function algo_selection_double(array, canvas) {
+	let low = 0;
+	let high = array.length - 1;
+	let min = 0;
+	let max = 0;
+
+	while (low <= high) {
+		for (let i = low; i <= high; i++) {
+			if (array[i] > array[max]) {
+				max = i;
+			}
+			if (array[i] < array[min]) {
+				min = i;
+			}
+
+			await display(array, canvas, {
+				activeIndices: [low, high, i],
+				activeBounds: {
+					min: low,
+					max: high,
+				},
+				freeColors: [
+					{
+						color: color_blue,
+						min: min,
+						max: min,
+					},
+					{
+						color: color_orange,
+						min: max,
+						max: max,
+					},
+				],
+			});
+		}
+
+		if (max === low) {
+			max = min;
+		}
+
+		swap(array, low, min);
+		swap(array, high, max);
+		await display(array, canvas, {
+			activeIndices: [low, high],
+			activeBounds: {
+				min: low,
+				max: high,
+			},
+		});
+
+		low++;
+		high--;
+
+		min = low;
+		max = high;
+	}
+}
+
+async function algo_bubble(array, canvas) {
+	for (let i = array.length - 1; i >= 0; i--) {
+		for (let j = 1; j <= i; j++) {
+			if (array[j] < array[j - 1]) {
+				swap(array, j, j - 1);
+			}
+
+			await display(array, canvas, {
+				activeIndices: [j],
+				activeBounds: {
+					min: 0,
+					max: i,
+				},
+			});
+		}
+	}
+}
+
+// https://en.wikipedia.org/wiki/Cocktail_shaker_sort
+async function algo_cocktail(array, canvas) {
+	let min = 0;
+	let max = array.length - 1;
+	while (min <= max) {
+		let newMin = max;
+		let newMax = min;
+
+		for (let i = min; i < max; i++) {
+			if (array[i] > array[i + 1]) {
+				swap(array, i, i + 1);
+				newMax = i;
+			}
+
+			await display(array, canvas, {
+				activeIndices: [i],
+				activeBounds: { min: min, max: max },
+			});
+		}
+		max = newMax;
+
+		for (let j = max - 1; j >= min; j--) {
+			if (array[j] > array[j + 1]) {
+				swap(array, j, j + 1);
+				newMin = j;
+			}
+
+			await display(array, canvas, {
+				activeIndices: [j],
+				activeBounds: { min: min, max: max },
+			});
+		}
+		min = newMin + 1;
+	}
+}
+
+async function algo_oddeven(array, canvas) {
+	let sorted = false;
+	while (!sorted) {
+		sorted = true;
+		for (let i = 1; i < array.length - 1; i += 2) {
+			if (array[i] > array[i + 1]) {
+				swap(array, i, i + 1);
+				sorted = false;
+			}
+			await display(array, canvas, {
+				activeIndices: [i, i + 1],
+			});
+		}
+		for (let i = 0; i < array.length - 1; i += 2) {
+			if (array[i] > array[i + 1]) {
+				swap(array, i, i + 1);
+				sorted = false;
+			}
+			await display(array, canvas, {
+				activeIndices: [i, i + 1],
+			});
+		}
+	}
+}
+
+// https://en.wikipedia.org/wiki/Comb_sort
+async function algo_comb(array, canvas) {
+	const shrinkFactor = 1.3;
+	let gap = array.length;
+	let sorted = false;
+
+	while (!sorted) {
+		gap = Math.floor(gap / shrinkFactor);
+		if (gap <= 1) {
+			gap = 1;
+
+			// Could only POSSIBLY be sorted at gap=1
+			sorted = true;
+		}
+
+		for (let i = 0; i + gap < array.length; i++) {
+			if (array[i] > array[i + gap]) {
+				swap(array, i, i + gap);
+				sorted = false;
+			}
+			await display(array, canvas, {
+				activeIndices: [i, i + gap],
+			});
+		}
+	}
+}
+
+async function algo_shell(array, canvas) {
+	// Compute gaps (since input is of any size)
+	let gaps = [1];
+	const gapMult = 2.25;
+	while (gaps.at(-1) < array.length) {
+		gaps.push(Math.floor(gaps.at(-1) * gapMult));
+	}
+	gaps.pop();
+
+	// Algo
+	for (let i = gaps.length - 1; i >= 0; i--) {
+		const gap = gaps[i];
+
+		for (let j = gap; j < array.length; j++) {
+			const element = array[j];
+			let k = j;
+
+			while (array[k - gap] > element) {
+				array[k] = array[k - gap];
+				k -= gap;
+
+				await display(array, canvas, {
+					activeIndices: [k, k - gap],
+				});
+			}
+			array[k] = element;
+		}
+	}
+}
+
 // Insertion Sort | O(n^2) -- but typically outperforms other n^2 algorithms
 async function algo_insertion(array, canvas) {
-	let props = {
-		activeBounds: {
-			min: 0,
-			max: 0,
-		},
-		active1: 0,
-		active2: 0,
-	};
-
 	for (let i = 1; i < array.length; i++) {
-		props.activeBounds.max = i;
-		props.active1 = i;
-		props.active2 = i - 1;
-		await display(array, canvas, { ...props });
+		await display(array, canvas, {
+			activeIndices: [i, i - 1],
+			activeBounds: {
+				min: 0,
+				max: i,
+			},
+		});
 
 		if (array[i] > array[i - 1]) {
 			continue;
 		}
 
 		for (let j = i; j >= 0; j--) {
-			props.active2 = j;
-			await display(array, canvas, props);
+			await display(array, canvas, {
+				activeIndices: [i, j],
+				activeBounds: {
+					min: 0,
+					max: i,
+				},
+			});
 
 			if (array[j] < array[j - 1]) {
 				swap(array, j, j - 1);
@@ -208,9 +396,249 @@ async function algo_insertion(array, canvas) {
 	}
 }
 
+// https://en.wikipedia.org/wiki/Bead_sort
+// https://github.com/w0rthy/ArrayVisualizer/blob/master/src/array/visualizer/ArrayController.java
+// ... aka Bead Sort
+async function algo_gravity(array, canvas) {
+	let max = array.reduce((prev, curr) => Math.max(prev, curr));
+	let abacus = Array.from(Array(array.length), () => new Array(max).fill(0));
+
+	for (let i = 0; i < array.length; i++) {
+		for (let j = 0; j < array[i]; j++) {
+			abacus[i][abacus[0].length - j - 1] = 1;
+		}
+	}
+
+	// Apply Gravity
+	for (let i = 0; i < abacus[0].length; i++) {
+		for (let j = 0; j < abacus.length; j++) {
+			if (abacus[j][i] === 1) {
+				let dropPos = j;
+				while (dropPos + 1 < abacus.length && abacus[dropPos][i] === 1) {
+					dropPos++;
+				}
+				if (abacus[dropPos][i] === 0) {
+					abacus[dropPos][i] = 1;
+					abacus[j][i] = 0;
+				}
+			}
+		}
+
+		for (let x = 0; x < abacus.length; x++) {
+			let count = 0;
+			for (let y = 0; y < abacus[0].length; y++) {
+				count += abacus[x][y];
+			}
+
+			array[x] = count;
+		}
+
+		// display here, after each gravity wave
+		await display(array, canvas);
+	}
+}
+
+//https://en.wikipedia.org/wiki/Bitonic_sorter
+async function algo_bitonic(array, canvas) {
+	for (let k = 2; k <= array.length; k *= 2) {
+		for (let j = k / 2; j > 0; j = Math.floor(j / 2)) {
+			for (let i = 0; i < array.length; i++) {
+				const l = i ^ j; // bitwise XOR
+				if (l > i) {
+					// "i & k" is bitwise AND function
+					if (
+						((i & k) === 0 && array[i] > array[l]) ||
+						((i & k) !== 0 && array[i] < array[l])
+					) {
+						swap(array, i, l);
+					}
+				}
+
+				await display(array, canvas, {
+					activeIndices: [i, l],
+				});
+			}
+		}
+	}
+}
+
+// https://en.wikipedia.org/wiki/Batcher_odd%E2%80%93even_mergesort
+async function algo_batcher_oddeven(array, canvas) {
+	for (let p = 1; p < array.length; p *= 2) {
+		for (let k = p; k >= 1; k = Math.floor(k / 2)) {
+			for (let j = k % p; j < array.length - k; j += 2 * k) {
+				for (let i = 0; i < k; i++) {
+					const a = Math.floor((i + j) / (p * 2));
+					const b = Math.floor((i + j + k) / (p * 2));
+					await display(array, canvas, {
+						activeIndices: [i + j, i + j + k],
+					});
+					if (a === b) {
+						const aVal = array[i + j];
+						const bVal = array[i + j + k];
+						if (aVal > bVal) {
+							swap(array, i + j, i + j + k);
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
 // ====================================
 // Real Sorts -- O(n log n) -- The Best
 // ====================================
+
+// https://github.com/Mrrl/GrailSort/blob/master/GrailSort.h
+// Grail Sort -- TODO
+
+// https://github.com/BonzaiThePenguin/WikiSort/blob/master/WikiSort.cpp
+// Block Sort / Wiki Sort -- TODO
+
+async function algo_heap(array, canvas) {
+	await algo_heap_heapify(array, canvas);
+
+	for (let i = array.length - 1; i > 0; i--) {
+		swap(array, 0, i);
+		// await display(array, canvas, {
+		// 	activeIndices: [0, i],
+		// 	activeBounds: {
+		// 		min: 0,
+		// 		max: i,
+		// 	},
+		// });
+		await algo_heap_siftdown(array, canvas, 0, i - 1);
+	}
+}
+async function algo_heap_heapify(array, canvas) {
+	for (let i = array.length - 1; i >= 0; i--) {
+		await algo_heap_siftdown(array, canvas, i, array.length - 1);
+	}
+}
+async function algo_heap_siftdown(array, canvas, start, end) {
+	let parentIndex = start;
+
+	// "while this node has a child"
+	while (algo_heap_leftChildIndex(parentIndex) <= end) {
+		let indexToSwapWithParent = parentIndex; // default as no swap
+
+		const leftChildIndex = algo_heap_leftChildIndex(parentIndex);
+		const rightChildIndex = algo_heap_rightChildIndex(parentIndex);
+
+		if (array[parentIndex] < array[leftChildIndex]) {
+			indexToSwapWithParent = leftChildIndex;
+		}
+		if (
+			rightChildIndex <= end &&
+			array[indexToSwapWithParent] < array[rightChildIndex]
+		) {
+			indexToSwapWithParent = rightChildIndex;
+		}
+
+		if (indexToSwapWithParent === parentIndex) {
+			return;
+		} else {
+			swap(array, parentIndex, indexToSwapWithParent);
+			parentIndex = indexToSwapWithParent; // sift down next node	also
+
+			await display(array, canvas, {
+				activeIndices: [parentIndex, indexToSwapWithParent],
+				activeBounds: {
+					min: start,
+					max: end,
+				},
+			});
+		}
+	}
+}
+function algo_heap_parentIndex(index) {
+	return Math.floor((index - 1) / 2);
+}
+function algo_heap_leftChildIndex(index) {
+	return 2 * index + 1;
+}
+function algo_heap_rightChildIndex(index) {
+	return algo_heap_leftChildIndex(index) + 1;
+}
+
+// https://www.geeksforgeeks.org/binary-insertion-sort/
+async function algo_insertion_binary(array, canvas) {
+	for (let i = 1; i < array.length; i++) {
+		const element = array[i];
+
+		let insertIndex = Math.abs(
+			await algo_insertion_binary_search(
+				array,
+				canvas,
+				{
+					activeIndices: [i],
+					activeBounds: {
+						min: 0,
+						max: i,
+					},
+				},
+				element,
+				0,
+				i - 1
+			)
+		);
+
+		let j = i - 1;
+		while (j >= insertIndex) {
+			array[j + 1] = array[j];
+			j--;
+		}
+		array[j + 1] = element;
+	}
+}
+async function algo_insertion_binary_search(
+	array,
+	canvas,
+	props,
+	value,
+	low,
+	high
+) {
+	if (high <= low) {
+		const ret = value > array[low] ? low + 1 : low;
+		await display(array, canvas, {
+			...props,
+			...{ freeColors: [{ color: color_blue, min: ret, max: ret }] },
+		});
+		return ret;
+	}
+
+	let mid = Math.floor((low + high) / 2);
+	await display(array, canvas, {
+		...props,
+		...{ freeColors: [{ color: color_blue, min: mid, max: mid }] },
+	});
+
+	if (value === array[mid]) {
+		return mid + 1;
+	}
+
+	if (value <= array[mid]) {
+		return await algo_insertion_binary_search(
+			array,
+			canvas,
+			props,
+			value,
+			low,
+			mid - 1
+		);
+	} else {
+		return await algo_insertion_binary_search(
+			array,
+			canvas,
+			props,
+			value,
+			mid + 1,
+			high
+		);
+	}
+}
 
 // Merge Sort | O(n log n)
 async function algo_mergesort(array, canvas) {
@@ -257,10 +685,7 @@ async function algo_mergesort_merge(array, canvas, min, mid, max) {
 			mid++;
 		}
 
-		await display(array, canvas, {
-			active1: aIndex,
-			active2: bIndex,
-		});
+		await display(array, canvas, { activeIndices: [aIndex, bIndex] });
 	}
 }
 
@@ -283,7 +708,10 @@ async function algo_quicksort_partition(array, canvas, min, max) {
 		return min;
 	}
 
-	// pivot == first element
+	// Choose pivot. Picking random element in range is...
+	// ... more robust, compared to picking first.
+	const pivotIndex = min + Math.floor(Math.random() * (max - min + 1));
+	swap(array, pivotIndex, min);
 	const pivot = array[min];
 
 	// set up working indices
@@ -332,7 +760,7 @@ async function algo_quicksort_partition(array, canvas, min, max) {
 }
 function _quicksortProps(min, max, lowIndex, highIndex) {
 	return {
-		active1: min,
+		activeIndices: [min],
 		activeBounds: { min: min, max: max },
 		freeColors: [
 			{

@@ -10,7 +10,7 @@ let sortingArray = [];
 
 const settings = {
 	displayType: "Bars",
-	colorType: "Monochrome",
+	// colorType: "Monochrome",
 	randomizeType: "Shuffle",
 	arraySizePow: 6, // 2^6 == 64
 	displaySpeed: 1, // only 1 in every n frames are shown.
@@ -25,10 +25,10 @@ function _setDisplayType(type) {
 	document.getElementById("set-displayType").innerText = type;
 }
 
-function _setColorType(type) {
-	settings["colorType"] = type;
-	document.getElementById("set-colorType").innerText = type;
-}
+// function _setColorType(type) {
+// 	settings["colorType"] = type;
+// 	document.getElementById("set-colorType").innerText = type;
+// }
 
 // function _setRandomizeType(type) {
 // 	settings["randomizeType"] = type;
@@ -57,7 +57,7 @@ function _setDisplayTimeout(timeout) {
 
 window.addEventListener("load", () => {
 	_setDisplayType(settingsDefault["displayType"]);
-	_setColorType(settingsDefault["colorType"]);
+	// _setColorType(settingsDefault["colorType"]);
 	// _setRandomizeType(settingsDefault["randomizeType"]);
 	_setArraySizePow(settingsDefault["arraySizePow"]);
 	_setDisplaySpeed(settingsDefault["displaySpeed"]);
@@ -90,14 +90,14 @@ function _initButtons(canvas) {
 	});
 
 	// Display Color
-	const colors = ["vis-color-mono", "vis-color-rgb"];
-	colors.forEach((colorTypeId) => {
-		const element = document.getElementById(colorTypeId);
-		element.addEventListener("click", () => {
-			_setColorType(element.innerText);
-			display(sortingArray, canvas, { show: true });
-		});
-	});
+	// const colors = ["vis-color-mono", "vis-color-rgb"];
+	// colors.forEach((colorTypeId) => {
+	// 	const element = document.getElementById(colorTypeId);
+	// 	element.addEventListener("click", () => {
+	// 		_setColorType(element.innerText);
+	// 		display(sortingArray, canvas, { show: true });
+	// 	});
+	// });
 
 	// Array Size
 	document.getElementById("arr-size-down").addEventListener("click", () => {
@@ -108,9 +108,9 @@ function _initButtons(canvas) {
 		_setArraySizePow(settings["arraySizePow"] + 1);
 		_refreshSortingArray(canvas);
 	});
-	document.getElementById("arr-refresh").addEventListener("click", () => {
-		_refreshSortingArray(canvas);
-	});
+	// document.getElementById("arr-refresh").addEventListener("click", () => {
+	// 	_refreshSortingArray(canvas);
+	// });
 
 	// Speed Mult
 	document.getElementById("set-spd-reset").addEventListener("click", () => {
@@ -136,13 +136,24 @@ function _initButtons(canvas) {
 		// Slow -- O(n^2) or more
 		// { key: "sort-slow", val: algo_slowsort }, // too slow
 		// { key: "sort-stooge", val: algo_stooge }, // too slow
-		{ key: "sort-selection", val: algo_selection },
 		{ key: "sort-gnome", val: algo_gnome },
+		{ key: "sort-selection", val: algo_selection },
+		{ key: "sort-selection-double", val: algo_selection_double },
+		{ key: "sort-bubble", val: algo_bubble },
+		{ key: "sort-cocktail", val: algo_cocktail },
+		{ key: "sort-comb", val: algo_comb },
+		{ key: "sort-shell", val: algo_shell },
+		{ key: "sort-gravity", val: algo_gravity },
 
 		// Middle -- Somewhere Between
-		{ key: "sort-insertion", val: algo_insertion }, // slightly better than other n^2 sorts
+		{ key: "sort-oddEven", val: algo_oddeven },
+		{ key: "sort-insertion", val: algo_insertion },
+		{ key: "sort-batcher-oddeven", val: algo_batcher_oddeven },
+		{ key: "sort-bitonic", val: algo_bitonic },
 
 		// Fast -- O(n log n)
+		{ key: "sort-heap", val: algo_heap },
+		{ key: "sort-insertion-binary", val: algo_insertion_binary },
 		{ key: "sort-merge", val: algo_mergesort },
 		{ key: "sort-quick", val: algo_quicksort },
 	];
