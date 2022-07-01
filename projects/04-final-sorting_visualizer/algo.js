@@ -69,38 +69,117 @@ async function algo_validate(array, canvas) {
 	return isSorted;
 }
 
+async function algo_util_partition(array, canvas, min, max) {
+	if (min > max) {
+		return min;
+	}
+
+	// Choose pivot. Picking random element in range is...
+	// ... more robust, compared to picking first.
+	const pivotIndex = min + Math.floor(Math.random() * (max - min + 1));
+	swap(array, pivotIndex, min);
+	const pivot = array[min];
+
+	// set up working indices
+	let lowIndex = min;
+	let highIndex = max;
+
+	while (lowIndex < highIndex) {
+		// Look for next value > pivot
+		while (lowIndex < max && array[lowIndex] <= pivot) {
+			lowIndex++;
+
+			await display(
+				array,
+				canvas,
+				_algo_util_partition_props(min, max, lowIndex, highIndex)
+			);
+		}
+
+		// Find next value < pivot
+		while (highIndex > min && array[highIndex] > pivot) {
+			highIndex--;
+
+			await display(
+				array,
+				canvas,
+				_algo_util_partition_props(min, max, lowIndex, highIndex)
+			);
+		}
+
+		// Swap if indices have not crossed
+		if (lowIndex < highIndex) {
+			swap(array, lowIndex, highIndex);
+
+			await display(
+				array,
+				canvas,
+				_algo_util_partition_props(min, max, lowIndex, highIndex)
+			);
+		}
+	}
+
+	// At this point low and high indexes have crossed each other
+	// - this means that the array is partitioned into two sides
+	swap(array, min, highIndex);
+	return highIndex;
+}
+function _algo_util_partition_props(min, max, lowIndex, highIndex) {
+	return {
+		activeIndices: [min],
+		activeBounds: { min: min, max: max },
+		freeColors: [
+			{
+				color: color_blue,
+				min: lowIndex,
+				max: lowIndex,
+			},
+			{
+				color: color_orange,
+				min: highIndex,
+				max: highIndex,
+			},
+		],
+	};
+}
+
 // =================================
 // Real Sorts -- O(n^x) -- The Worst
 // =================================
 
 // Slowsort | O(n^( (log_2(n))/(n-k) ))
 // -- Behaves okay on inputs of size 64 or less. Slows down hugely for each step past 64.
-async function algo_slowsort(array, canvas) {
-	await algo_slowsort_recursive(array, canvas, 0, array.length - 1);
-}
-async function algo_slowsort_recursive(array, canvas, min, max) {
+async function algo_slowsort(array, canvas, min, max) {
+	min = ifUndefined(min, 0);
+	max = ifUndefined(max, array.length - 1);
 	if (min >= max) {
 		return;
 	}
 
 	const mid = Math.floor((min + max) / 2);
-	await algo_slowsort_recursive(array, canvas, min, mid);
-	await algo_slowsort_recursive(array, canvas, mid + 1, max);
+	await algo_slowsort(array, canvas, min, mid);
+	await algo_slowsort(array, canvas, mid + 1, max);
 
 	if (array[max] < array[mid]) {
-		await display(array, canvas, { activeIndices: [mid, max] });
+		await display(array, canvas, {
+			activeIndices: [mid, max],
+			activeBounds: { min: min, max: max },
+		});
 		swap(array, max, mid);
 	}
-	await algo_slowsort_recursive(array, canvas, min, max - 1);
+	await algo_slowsort(array, canvas, min, max - 1);
 }
 
 // Stooge Sort | ~O(n^2.71) | O(n^(log(3) / log(1.5)))
 // -- VERY SLOW, even on smaller input sizes.
-async function algo_stooge(array, canvas) {
-	await algo_stooge_recursive(array, canvas, 0, array.length - 1);
-}
-async function algo_stooge_recursive(array, canvas, min, max) {
-	await display(array, canvas, { activeIndices: [min, max] });
+async function algo_stooge(array, canvas, min, max) {
+	min = ifUndefined(min, 0);
+	max = ifUndefined(max, array.length - 1);
+
+	await display(array, canvas, {
+		activeIndices: [min, max],
+		activeBounds: { min: min, max: max },
+	});
 
 	if (array[min] > array[max]) {
 		swap(array, min, max);
@@ -118,21 +197,30 @@ async function algo_stooge_recursive(array, canvas, min, max) {
 //
 
 // Gnome Sort | O(n^2)
-async function algo_gnome(array, canvas) {
-	let i = 0;
-	while (i < array.length) {
-		if (i == 0 || array[i] >= array[i - 1]) {
+async function algo_gnome(array, canvas, min, max) {
+	min = ifUndefined(min, 0);
+	max = ifUndefined(max, array.length - 1);
+
+	let i = min;
+	while (i <= max) {
+		if (i == min || array[i] >= array[i - 1]) {
 			i++;
 		} else {
 			swap(array, i, i - 1);
 			i--;
 		}
-		await display(array, canvas, { activeIndices: [i] });
+		await display(array, canvas, {
+			activeIndices: [i],
+			activeBounds: { min: min, max: max },
+		});
 	}
 }
 
 // Selection Sort | O(n^2)
-async function algo_selection(array, canvas) {
+async function algo_selection(array, canvas, min, max) {
+	min = ifUndefined(min, 0);
+	max = ifUndefined(max, array.length - 1);
+
 	let props = {
 		activeIndices: [0, 0],
 		activeBounds: {
@@ -698,83 +786,10 @@ async function algo_quicksort_recursive(array, canvas, min, max) {
 		return;
 	}
 
-	const pivotIndex = await algo_quicksort_partition(array, canvas, min, max);
+	const pivotIndex = await algo_util_partition(array, canvas, min, max);
 
 	await algo_quicksort_recursive(array, canvas, min, pivotIndex - 1);
 	await algo_quicksort_recursive(array, canvas, pivotIndex + 1, max);
-}
-async function algo_quicksort_partition(array, canvas, min, max) {
-	if (min > max) {
-		return min;
-	}
-
-	// Choose pivot. Picking random element in range is...
-	// ... more robust, compared to picking first.
-	const pivotIndex = min + Math.floor(Math.random() * (max - min + 1));
-	swap(array, pivotIndex, min);
-	const pivot = array[min];
-
-	// set up working indices
-	let lowIndex = min;
-	let highIndex = max;
-
-	while (lowIndex < highIndex) {
-		// Look for next value > pivot
-		while (lowIndex < max && array[lowIndex] <= pivot) {
-			lowIndex++;
-
-			await display(
-				array,
-				canvas,
-				_quicksortProps(min, max, lowIndex, highIndex)
-			);
-		}
-
-		// Find next value < pivot
-		while (highIndex > min && array[highIndex] > pivot) {
-			highIndex--;
-
-			await display(
-				array,
-				canvas,
-				_quicksortProps(min, max, lowIndex, highIndex)
-			);
-		}
-
-		// Swap if indices have not crossed
-		if (lowIndex < highIndex) {
-			swap(array, lowIndex, highIndex);
-
-			await display(
-				array,
-				canvas,
-				_quicksortProps(min, max, lowIndex, highIndex)
-			);
-		}
-	}
-
-	// At this point low and high indexes have crossed each other
-	// - this means that the array is partitioned into two sides
-	swap(array, min, highIndex);
-	return highIndex;
-}
-function _quicksortProps(min, max, lowIndex, highIndex) {
-	return {
-		activeIndices: [min],
-		activeBounds: { min: min, max: max },
-		freeColors: [
-			{
-				color: color_blue,
-				min: lowIndex,
-				max: lowIndex,
-			},
-			{
-				color: color_orange,
-				min: highIndex,
-				max: highIndex,
-			},
-		],
-	};
 }
 
 // ==========
