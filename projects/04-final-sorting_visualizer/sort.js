@@ -158,7 +158,9 @@ function _initButtons(canvas) {
 		{ key: "sort-quick", val: algo_quicksort },
 
 		// Radix and other cool ones
-		{ key: "sort-radix", val: algo_radix_lsd },
+		{ key: "sort-radix-10", val: algo_radix_lsd_base10 },
+		{ key: "sort-radix-4", val: algo_radix_lsd_base4 },
+		{ key: "sort-radix-2", val: algo_radix_lsd_base2 },
 	];
 	sorts.forEach((sort) => {
 		document.getElementById(sort.key).addEventListener("click", () => {
