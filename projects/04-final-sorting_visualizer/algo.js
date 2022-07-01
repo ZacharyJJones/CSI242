@@ -1,10 +1,9 @@
-// ==========
-// To-Do List
-// ==========
 /*
-	Need: Radix Sort, Merge sort, binary insertion sort, cocktail shaker sort, heap sort
+	Great Sources:
+	1) Wikipedia
+	2) https://github.com/Gaming32/ArrayV
+	3) https://github.com/w0rthy/ArrayVisualizer
 */
-
 // ===============
 // Util Algorithms
 // ===============
@@ -190,7 +189,7 @@ async function algo_stooge_recursive(array, canvas, min, max) {
 
 	const numElements = max - min + 1;
 	if (numElements >= 3) {
-		const t = Math.floor((max - min + 1) / 3);
+		const t = Math.floor(numElements / 3);
 		await algo_stooge_recursive(array, canvas, min, max - t); // sort first 2/3rds
 		await algo_stooge_recursive(array, canvas, min + t, max); // sort second 2/3rds
 		await algo_stooge_recursive(array, canvas, min, max - t); // sort first 2/3rds again
@@ -583,13 +582,13 @@ async function algo_heap(array, canvas) {
 
 	for (let i = array.length - 1; i > 0; i--) {
 		swap(array, 0, i);
-		// await display(array, canvas, {
-		// 	activeIndices: [0, i],
-		// 	activeBounds: {
-		// 		min: 0,
-		// 		max: i,
-		// 	},
-		// });
+		await display(array, canvas, {
+			activeIndices: [0, i],
+			activeBounds: {
+				min: 0,
+				max: i,
+			},
+		});
 		await algo_heap_siftdown(array, canvas, 0, i - 1);
 	}
 }

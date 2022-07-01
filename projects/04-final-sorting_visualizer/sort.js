@@ -7,97 +7,150 @@ const color_green = "#50C878";
 //
 
 let sortingArray = [];
-
 const settings = {
-	displayType: "Bars",
-	// colorType: "Monochrome",
-	randomizeType: "Shuffle",
-	arraySizePow: 6, // 2^6 == 64
-	displaySpeed: 1, // only 1 in every n frames are shown.
-	displayTimeout: 50, // timeout between drawing
+	arraySizePow: 6,
+	displaySpeed: 1,
+	displayTimeout: 50,
+	displayType: "vis-bars",
+	sortAlgo: "sort-insertion",
 };
 const settingsDefault = { ...settings };
 
 // ==========================
 
-function _setDisplayType(type) {
-	settings["displayType"] = type;
-	document.getElementById("set-displayType").innerText = type;
+const displays = {
+	"vis-bars": "Bars",
+	"vis-pyramid": "Pyramid",
+	"vis-points": "Points",
+
+	"vis-circle": "Circle",
+	"vis-spiral": "Spiral",
+	"vis-circle-slices": "Circle-Slices",
+	"vis-spiral-slices": "Spiral-Slices",
+};
+
+const sorts = {
+	// Slow -- O(n^2) or worse
+	"sort-slow": algo_slowsort, // too slow
+	"sort-stooge": algo_stooge, // too slow
+
+	"sort-gnome": algo_gnome,
+	"sort-selection": algo_selection,
+	"sort-selection-double": algo_selection_double,
+	"sort-bubble": algo_bubble,
+	"sort-cocktail": algo_cocktail,
+	"sort-comb": algo_comb,
+	"sort-shell": algo_shell,
+	"sort-gravity": algo_gravity,
+
+	// Middle -- Somewhere Between
+	"sort-oddEven": algo_oddeven,
+	"sort-insertion": algo_insertion,
+	"sort-batcher-oddEven": algo_batcher_oddeven,
+	"sort-bitonic": algo_bitonic,
+
+	// Fast -- O(n log n)
+	"sort-radix-10": algo_radix_lsd_base10,
+	"sort-radix-4": algo_radix_lsd_base4,
+	"sort-radix-2": algo_radix_lsd_base2,
+	"sort-insertion-binary": algo_insertion_binary,
+	"sort-heap": algo_heap,
+	"sort-merge": algo_mergesort,
+	"sort-quick": algo_quicksort,
+};
+// ==========================
+
+function _setDisplayType(displayKey) {
+	if (Object.keys(displays).some((x) => x === displayKey)) {
+		settings["displayType"] = displayKey;
+		document.getElementById("set-displayType").innerText = displays[displayKey];
+	}
 }
 
-// function _setColorType(type) {
-// 	settings["colorType"] = type;
-// 	document.getElementById("set-colorType").innerText = type;
-// }
-
-// function _setRandomizeType(type) {
-// 	settings["randomizeType"] = type;
-// 	document.getElementById("set-randomize").innerText = type;
-// }
-
 function _setArraySizePow(pow) {
-	settings["arraySizePow"] = clampNum(pow, 0, 31);
-	const displayText = `2^${pow} | ${Math.pow(2, pow)}`;
+	const clampedPow = clampNum(pow, 0, 16);
+
+	settings["arraySizePow"] = clampedPow;
+	const displayText = `2^${clampedPow} | ${Math.pow(2, clampedPow)}`;
 	document.getElementById("set-arraySize").innerText = displayText;
 }
 
 function _setDisplaySpeed(speed) {
 	const value = Math.max(1, speed);
+
 	settings["displaySpeed"] = value;
 	document.getElementById("set-displaySpeed").innerText = `${value}x`;
 }
 
 function _setDisplayTimeout(timeout) {
 	const value = Math.max(0, timeout);
+
 	settings["displayTimeout"] = value;
 	document.getElementById("set-displayTimeout").innerText = `${value}ms`;
+}
+
+function _setSortAlgo(algoKey) {
+	if (Object.keys(sorts).some((x) => x === algoKey)) {
+		settings["sortAlgo"] = algoKey;
+		document.getElementById("sort-name").innerText = algoKey;
+	}
 }
 
 // ==========================
 
 window.addEventListener("load", () => {
-	_setDisplayType(settingsDefault["displayType"]);
-	// _setColorType(settingsDefault["colorType"]);
-	// _setRandomizeType(settingsDefault["randomizeType"]);
+	const canvas = document.getElementById("sort-display");
+
+	const displaySortImmediately = _initSettings();
+	_refreshSortingArray(canvas);
+	_initButtons(canvas);
+
+	if (displaySortImmediately) {
+		_invokeSort(sortingArray, canvas);
+	}
+});
+
+function _initSettings() {
+	// Standard first, to make sure things get displayed
 	_setArraySizePow(settingsDefault["arraySizePow"]);
 	_setDisplaySpeed(settingsDefault["displaySpeed"]);
 	_setDisplayTimeout(settingsDefault["displayTimeout"]);
+	_setDisplayType(settingsDefault["displayType"]);
+	_setSortAlgo(settingsDefault["sortAlgo"]);
 
-	const canvas = document.getElementById("sort-display");
-	_refreshSortingArray(canvas);
-	_initButtons(canvas);
-});
+	// Override as needed
+	const urlParams = new URLSearchParams(window.location.search);
+	let displaySortImmediately = false;
+	if (urlParams.get("arraySizePow") !== null) {
+		console.log(urlParams.get("arraySizePow"));
+		_setArraySizePow(urlParams.get("arraySizePow"));
+	}
+	if (urlParams.get("displaySpeed") !== null) {
+		_setDisplaySpeed(urlParams.get("displaySpeed"));
+	}
+	if (urlParams.get("displayTimeout") !== null) {
+		_setDisplayTimeout(urlParams.get("displayTimeout"));
+	}
+	if (urlParams.get("displayType") !== null) {
+		_setDisplayType(urlParams.get("displayType"));
+	}
+	if (urlParams.get("sortAlgo") !== null) {
+		_setSortAlgo(urlParams.get("sortAlgo"));
+		displaySortImmediately = true;
+	}
+
+	return displaySortImmediately;
+}
 
 function _initButtons(canvas) {
-	//
-
 	// Display Type
-	const displays = [
-		"vis-bars",
-		"vis-pyramid",
-		"vis-points",
-		"vis-circle",
-		"vis-circle-spiral",
-		"vis-circle-slices",
-		"vis-circle-slices-spiral",
-	];
-	displays.forEach((displayTypeId) => {
-		const element = document.getElementById(displayTypeId);
+	Object.keys(displays).forEach((key) => {
+		const element = document.getElementById(key);
 		element.addEventListener("click", () => {
-			_setDisplayType(element.innerText);
+			_setDisplayType(key);
 			display(sortingArray, canvas, { show: true });
 		});
 	});
-
-	// Display Color
-	// const colors = ["vis-color-mono", "vis-color-rgb"];
-	// colors.forEach((colorTypeId) => {
-	// 	const element = document.getElementById(colorTypeId);
-	// 	element.addEventListener("click", () => {
-	// 		_setColorType(element.innerText);
-	// 		display(sortingArray, canvas, { show: true });
-	// 	});
-	// });
 
 	// Array Size
 	document.getElementById("arr-size-down").addEventListener("click", () => {
@@ -108,9 +161,6 @@ function _initButtons(canvas) {
 		_setArraySizePow(settings["arraySizePow"] + 1);
 		_refreshSortingArray(canvas);
 	});
-	// document.getElementById("arr-refresh").addEventListener("click", () => {
-	// 	_refreshSortingArray(canvas);
-	// });
 
 	// Speed Mult
 	document.getElementById("set-spd-reset").addEventListener("click", () => {
@@ -132,66 +182,76 @@ function _initButtons(canvas) {
 	});
 
 	// Sorts
-	const sorts = [
-		// Slow -- O(n^2) or more
-		// { key: "sort-slow", val: algo_slowsort }, // too slow
-		// { key: "sort-stooge", val: algo_stooge }, // too slow
-		{ key: "sort-gnome", val: algo_gnome },
-		{ key: "sort-selection", val: algo_selection },
-		{ key: "sort-selection-double", val: algo_selection_double },
-		{ key: "sort-bubble", val: algo_bubble },
-		{ key: "sort-cocktail", val: algo_cocktail },
-		{ key: "sort-comb", val: algo_comb },
-		{ key: "sort-shell", val: algo_shell },
-		{ key: "sort-gravity", val: algo_gravity },
-
-		// Middle -- Somewhere Between
-		{ key: "sort-oddEven", val: algo_oddeven },
-		{ key: "sort-insertion", val: algo_insertion },
-		{ key: "sort-batcher-oddeven", val: algo_batcher_oddeven },
-		{ key: "sort-bitonic", val: algo_bitonic },
-
-		// Fast -- O(n log n)
-		{ key: "sort-heap", val: algo_heap },
-		{ key: "sort-insertion-binary", val: algo_insertion_binary },
-		{ key: "sort-merge", val: algo_mergesort },
-		{ key: "sort-quick", val: algo_quicksort },
-
-		// Radix and other cool ones
-		{ key: "sort-radix-10", val: algo_radix_lsd_base10 },
-		{ key: "sort-radix-4", val: algo_radix_lsd_base4 },
-		{ key: "sort-radix-2", val: algo_radix_lsd_base2 },
-	];
-	sorts.forEach((sort) => {
-		document.getElementById(sort.key).addEventListener("click", () => {
-			_invokeSort(sortingArray, canvas, sort.val);
+	Object.keys(sorts).forEach((key) => {
+		document.getElementById(key).addEventListener("click", () => {
+			_setSortAlgo(key);
+			_invokeSort(sortingArray, canvas);
 		});
 	});
 
-	//
+	// Etc
+	document.getElementById("share").addEventListener("click", () => {
+		_getShareLink();
+	});
+	document.getElementById("sort-again").addEventListener("click", () => {
+		_invokeSort(sortingArray, canvas);
+	});
+}
+
+function _getShareLink() {
+	const baseUrl = window.location.origin + window.location.pathname;
+	let queryString = "?";
+
+	const keys = Object.keys(settings);
+	for (let i = 0; i < keys.length; i++) {
+		const key = keys[i];
+
+		if (settings[key] !== settingsDefault[key]) {
+			queryString += `${key}=${settings[key]}`;
+
+			if (i < keys.length - 1) {
+				queryString += "&";
+			}
+		}
+	}
+
+	if (queryString === "?") {
+		queryString = "";
+	}
+
+	const finalUrl = baseUrl + queryString;
+	_shareLinkTempDisplay(finalUrl);
+	copyTextToSystemClipboard(finalUrl);
+}
+async function _shareLinkTempDisplay(link) {
+	const p = document.getElementById("share-display");
+	p.innerText = "Copied To Clipboard!";
+	await new Promise((resolve) => setTimeout(resolve, 3000));
+	p.innerText = "";
 }
 
 // ====================================
 
-async function _invokeSort(array, canvas, sortMethod) {
+async function _invokeSort(array, canvas) {
 	jumpToId(canvas.id);
 	await _preSortRandomize(array, canvas);
 
+	const sortMethod = sorts[settings["sortAlgo"]];
 	await sortMethod(array, canvas);
 
 	await algo_validate(array, canvas);
 }
 
 async function _preSortRandomize(array, canvas) {
-	const setting = settings["randomizeType"];
-	let mixupFunction;
-	if (setting === "Randomize") {
-		mixupFunction = algo_util_randomize;
-	} else {
-		mixupFunction = algo_util_shuffle;
-	}
-
-	await mixupFunction(array, canvas);
+	await algo_util_shuffle(array, canvas);
+	// const setting = settings["randomizeType"];
+	// let mixupFunction;
+	// if (setting === "Randomize") {
+	// 	mixupFunction = algo_util_randomize;
+	// } else {
+	// 	mixupFunction = algo_util_shuffle;
+	// }
+	// await mixupFunction(array, canvas);
 }
 
 function _refreshSortingArray(canvas) {
@@ -206,5 +266,8 @@ function _initArray(size) {
 	}
 	return arrayInit;
 }
+
+// Creates a link
+async function _shareSettings() {}
 
 // ====================================

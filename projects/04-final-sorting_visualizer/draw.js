@@ -23,38 +23,38 @@ const _colorPropsSchema = {
 };
 
 const _drawInfo = {
-	Bars: {
+	"vis-bars": {
 		color: "Monochrome",
 		props: _getLinearProps,
 		func: _drawBar,
 	},
-	Pyramid: {
+	"vis-pyramid": {
 		color: "Monochrome",
 		props: _getLinearProps,
 		func: _drawPyramid,
 	},
-	Points: {
+	"vis-points": {
 		color: "Monochrome",
 		props: _getLinearProps,
 		func: _drawPoint,
 	},
 
-	Circle: {
+	"vis-circle": {
 		color: "RGB",
 		props: _getCircleProps,
 		func: _drawCircle,
 	},
-	"Circle-Spiral": {
+	"vis-spiral": {
 		color: "Monochrome",
 		props: _getCircleProps,
 		func: _drawCircleSpiral,
 	},
-	"Circle-Slices": {
+	"vis-circle-slices": {
 		color: "RGB",
 		props: _getCircleProps,
 		func: _drawCircleSlices,
 	},
-	"Circle-Slices-Spiral": {
+	"vis-spiral-slices": {
 		color: "Monochrome",
 		props: _getCircleProps,
 		func: _drawCircleSlicesSpiral,

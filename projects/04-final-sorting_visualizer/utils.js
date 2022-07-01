@@ -83,3 +83,7 @@ function floorToPowerOfTwo(number) {
 	}
 	return lastPowOfTwo / 2;
 }
+
+async function copyTextToSystemClipboard(text) {
+	await navigator.clipboard.writeText(text);
+}

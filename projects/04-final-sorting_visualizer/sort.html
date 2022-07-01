@@ -35,9 +35,9 @@
 				</div>
 				<div class="center">
 					<button id="vis-circle">Circle</button>
-					<button id="vis-circle-slices">Circle-Slices</button>
-					<button id="vis-circle-spiral">Circle-Spiral</button>
-					<button id="vis-circle-slices-spiral">Circle-Slices-Spiral</button>
+					<button id="vis-spiral">Spiral</button>
+					<button id="vis-circle-slices">Circle Slices</button>
+					<button id="vis-spiral-slices">Spiral Slices</button>
 				</div>
 			</div>
 
@@ -83,12 +83,12 @@
 				<div class="option-group center-col">
 					<h3 class="center">Slow | O(n^2)</h3>
 
-					<!-- <button id="sort-slow">
+					<button id="sort-slow">
 						Slow
-					</button> -->
-					<!-- <button id="sort-stooge"> 
+					</button>
+					<button id="sort-stooge">
 						Stooge
-					 </button> -->
+					</button>
 					<button id="sort-gnome">
 						Gnome
 					</button>
@@ -118,39 +118,22 @@
 					<button id="sort-selection-double">
 						Double Selection
 					</button>
+					<button id="sort-batcher-oddEven">
+						Batcher Odd-Even
+					</button>
+					<button id="sort-bitonic">
+						Bitonic
+					</button>
 					<button id="sort-comb">
 						Comb
 					</button>
 					<button id="sort-shell">
 						Shell
 					</button>
-					<button id="sort-batcher-oddeven">
-						Batcher Odd-Even
-					</button>
-					<button id="sort-bitonic">
-						Bitonic
-					</button>
 				</div>
 
 				<div class="option-group  center-col">
 					<h3 class="center">Fast | O(n log n)</h3>
-
-					<button id="sort-heap">
-						Heap
-					</button>
-					<button id="sort-insertion-binary">
-						Binary Insertion
-					</button>
-					<button id="sort-merge">
-						Merge
-					</button>
-					<button id="sort-quick">
-						QuickSort
-					</button>
-				</div>
-
-				<div class="option-group  center-col">
-					<h3 class="center">Extras</h3>
 
 					<button id="sort-radix-10">
 						Radix LSD Base10
@@ -161,7 +144,21 @@
 					<button id="sort-radix-2">
 						Radix LSD Base2
 					</button>
+
+					<button id="sort-insertion-binary">
+						Binary Insertion
+					</button>
+					<button id="sort-heap">
+						Heap
+					</button>
+					<button id="sort-merge">
+						Merge
+					</button>
+					<button id="sort-quick">
+						QuickSort
+					</button>
 				</div>
+
 
 			</div>
 		</div>
@@ -169,9 +166,20 @@
 
 	<section id="section-display">
 
+		<h2 id="sort-name">_</h2>
+
 		<figure id="canvas-bg">
 			<canvas id="sort-display"></canvas>
 		</figure>
+
+
+		<div class="center">
+			<p id="share-display"></p>
+		</div>
+		<div class="center">
+			<button id="sort-again">Sort Again!</button>
+			<button id="share">Share This Sort!</button>
+		</div>
 	</section>
 
 
