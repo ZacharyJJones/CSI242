@@ -156,6 +156,9 @@ function _initButtons(canvas) {
 		{ key: "sort-insertion-binary", val: algo_insertion_binary },
 		{ key: "sort-merge", val: algo_mergesort },
 		{ key: "sort-quick", val: algo_quicksort },
+
+		// Radix and other cool ones
+		{ key: "sort-radix", val: algo_radix_lsd },
 	];
 	sorts.forEach((sort) => {
 		document.getElementById(sort.key).addEventListener("click", () => {

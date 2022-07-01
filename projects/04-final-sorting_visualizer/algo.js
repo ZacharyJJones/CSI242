@@ -69,6 +69,12 @@ async function algo_validate(array, canvas) {
 	return isSorted;
 }
 
+function algo_util_shiftRightTo(array, indexToShift, destinationIndex) {
+	for (let i = indexToShift; i < destinationIndex; i++) {
+		swap(array, i, i + 1);
+	}
+}
+
 async function algo_util_partition(array, canvas, min, max) {
 	if (min > max) {
 		return min;
@@ -778,6 +784,101 @@ async function algo_quicksort_recursive(array, canvas, min, max) {
 
 	await algo_quicksort_recursive(array, canvas, min, pivotIndex - 1);
 	await algo_quicksort_recursive(array, canvas, pivotIndex + 1, max);
+}
+
+// RADIX!!! LETS GOO!!!!
+async function algo_radix_lsd(array, canvas, radix) {
+	radix = 10; // override for now
+
+	const mostDigits = algo_radix_mostDigits(array, radix);
+	for (let k = 0; k < mostDigits; k++) {
+		let digitIndexBuckets = Array.from({ length: radix }, () => []);
+
+		// Recording indices into buckets
+		// note! unnecessary step here!!! Could just keep looking at first...
+		// ... element and moving it to the correct bucket area.
+		for (let i = 0; i < array.length; i++) {
+			const digit = algo_radix_getDigit(array[i], k, radix);
+			digitIndexBuckets[digit].push(i);
+
+			await display(array, canvas, {
+				activeIndices: [i],
+			});
+		}
+
+		// Set up for moving things
+		const maxBucketLength = digitIndexBuckets
+			.map((x) => x.length)
+			.reduce((prev, curr) => Math.max(prev, curr));
+
+		const bucketInsertIndices = new Array(radix).fill(array.length - 1);
+
+		// shift all things to their correct locations
+		for (let j = 0; j < maxBucketLength; j++) {
+			for (let i = 0; i < radix; i++) {
+				// for each bucket,
+				if (digitIndexBuckets[i].length == 0) {
+					continue;
+				}
+
+				await display(array, canvas, {
+					activeIndices: [digitIndexBuckets[i][0], ...bucketInsertIndices],
+				});
+
+				algo_radix_shiftAndReduce(
+					array,
+					digitIndexBuckets,
+					bucketInsertIndices,
+					i
+				);
+			}
+		}
+	}
+}
+function algo_radix_getDigit(num, place, radix) {
+	return Math.floor(num / Math.pow(radix, place)) % radix;
+}
+function algo_radix_mostDigits(array, radix) {
+	let maxDigits = 0;
+
+	for (let i = 0; i < array.length; i++) {
+		maxDigits = Math.max(maxDigits, algo_radix_digitCount(array[i], radix));
+	}
+
+	return maxDigits;
+}
+function algo_radix_digitCount(num, radix) {
+	// log_a(x) == log(x) / log(a)
+	return 1 + Math.floor(Math.log(num) / Math.log(radix));
+}
+function algo_radix_shiftAndReduce(
+	array,
+	digitIndexBuckets,
+	bucketInsertIndices,
+	i
+) {
+	// Shift Right
+	const indexToShift = digitIndexBuckets[i].shift();
+	const destinationIndex = bucketInsertIndices[i];
+	algo_util_shiftRightTo(array, indexToShift, destinationIndex);
+
+	// Update Bucket Insert Indices
+	for (let j = 0; j < bucketInsertIndices.length; j++) {
+		if (j < i) {
+			bucketInsertIndices[j]--;
+		}
+	}
+
+	// Update Bucket Item Indices
+	for (let j = 0; j < digitIndexBuckets.length; j++) {
+		const bucket = digitIndexBuckets[j];
+		for (let k = 0; k < bucket.length; k++) {
+			if (bucket[k] > indexToShift) {
+				bucket[k]--;
+				// bucket[j] = bucket[j] - 1;
+			}
+		}
+	}
 }
 
 // ==========
