@@ -149,37 +149,34 @@ function _algo_util_partition_props(min, max, lowIndex, highIndex) {
 
 // Slowsort | O(n^( (log_2(n))/(n-k) ))
 // -- Behaves okay on inputs of size 64 or less. Slows down hugely for each step past 64.
-async function algo_slowsort(array, canvas, min, max) {
-	min = ifUndefined(min, 0);
-	max = ifUndefined(max, array.length - 1);
+
+async function algo_slowsort(array, canvas) {
+	await algo_slowsort_recursive(array, canvas, 0, array.length - 1);
+}
+async function algo_slowsort_recursive(array, canvas, min, max) {
 	if (min >= max) {
 		return;
 	}
 
 	const mid = Math.floor((min + max) / 2);
-	await algo_slowsort(array, canvas, min, mid);
-	await algo_slowsort(array, canvas, mid + 1, max);
+	await algo_slowsort_recursive(array, canvas, min, mid);
+	await algo_slowsort_recursive(array, canvas, mid + 1, max);
 
 	if (array[max] < array[mid]) {
-		await display(array, canvas, {
-			activeIndices: [mid, max],
-			activeBounds: { min: min, max: max },
-		});
+		await display(array, canvas, { activeIndices: [mid, max] });
 		swap(array, max, mid);
 	}
-	await algo_slowsort(array, canvas, min, max - 1);
+	await algo_slowsort_recursive(array, canvas, min, max - 1);
 }
 
 // Stooge Sort | ~O(n^2.71) | O(n^(log(3) / log(1.5)))
 // -- VERY SLOW, even on smaller input sizes.
-async function algo_stooge(array, canvas, min, max) {
-	min = ifUndefined(min, 0);
-	max = ifUndefined(max, array.length - 1);
 
-	await display(array, canvas, {
-		activeIndices: [min, max],
-		activeBounds: { min: min, max: max },
-	});
+async function algo_stooge(array, canvas) {
+	await algo_stooge_recursive(array, canvas, 0, array.length - 1);
+}
+async function algo_stooge_recursive(array, canvas, min, max) {
+	await display(array, canvas, { activeIndices: [min, max] });
 
 	if (array[min] > array[max]) {
 		swap(array, min, max);
@@ -197,30 +194,21 @@ async function algo_stooge(array, canvas, min, max) {
 //
 
 // Gnome Sort | O(n^2)
-async function algo_gnome(array, canvas, min, max) {
-	min = ifUndefined(min, 0);
-	max = ifUndefined(max, array.length - 1);
-
-	let i = min;
-	while (i <= max) {
-		if (i == min || array[i] >= array[i - 1]) {
+async function algo_gnome(array, canvas) {
+	let i = 0;
+	while (i < array.length) {
+		if (i == 0 || array[i] >= array[i - 1]) {
 			i++;
 		} else {
 			swap(array, i, i - 1);
 			i--;
 		}
-		await display(array, canvas, {
-			activeIndices: [i],
-			activeBounds: { min: min, max: max },
-		});
+		await display(array, canvas, { activeIndices: [i] });
 	}
 }
 
 // Selection Sort | O(n^2)
-async function algo_selection(array, canvas, min, max) {
-	min = ifUndefined(min, 0);
-	max = ifUndefined(max, array.length - 1);
-
+async function algo_selection(array, canvas) {
 	let props = {
 		activeIndices: [0, 0],
 		activeBounds: {
