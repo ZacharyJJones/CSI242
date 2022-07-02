@@ -1,3 +1,5 @@
+// Godsend: https://stackoverflow.com/questions/37206304/changing-the-pitch-of-an-audio-element-without-external-libraries
+
 let _sound;
 const _audioContext = new AudioContext();
 
