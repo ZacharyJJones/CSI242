@@ -35,8 +35,8 @@ const displays = {
 
 const sorts = {
 	// Slow -- O(n^2) or worse
-	"sort-slow": algo_slowsort, // too slow
 	"sort-stooge": algo_stooge, // too slow
+	"sort-slow": algo_slowsort, // too slow
 
 	"sort-gnome": algo_gnome,
 	"sort-selection": algo_selection,
