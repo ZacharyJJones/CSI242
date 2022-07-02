@@ -4,7 +4,21 @@
 	--color-option: #e0e0d1;
 }
 
+* {
+}
+
 /*  */
+
+.flex-bigRow-smallCol {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+@media (max-width: 900px) {
+	.flex-bigRow-smallCol {
+		flex-direction: column;
+	}
+}
 
 .center {
 	display: flex;
@@ -41,11 +55,36 @@ section {
 
 /*  */
 
+.parameters-display {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	grid-template-rows: repeat(1, 1fr);
+}
+@media (max-width: 1080px) {
+	.parameters-display {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		grid-template-rows: repeat(2, 1fr);
+	}
+}
+@media (max-width: 600px) {
+	.parameters-display {
+		display: grid;
+		grid-template-columns: repeat(1, 1fr);
+		grid-template-rows: repeat(4, 1fr);
+	}
+}
+
 .option-group {
 	background-color: var(--color-option);
 
 	padding: 10px;
 	margin: 10px;
+}
+
+.option-subgroup {
+	display: flex;
+	flex-direction: column;
 }
 
 .setting {
@@ -67,6 +106,12 @@ button {
 .sort-display-head {
 	display: grid;
 	grid-template-columns: 1fr auto 1fr;
+}
+@media (max-width: 900px) {
+	.sort-display-head {
+		grid-template-rows: 1fr 1fr 1fr;
+		grid-template-columns: 1fr;
+	}
 }
 
 span {
@@ -96,3 +141,12 @@ canvas {
 		width: 1000px;
 	}
 } */
+
+@media (max-width: 900px) {
+	/* breakpoint to make things smaller */
+
+	.option-subgroup {
+		display: flex;
+		flex-direction: row;
+	}
+}

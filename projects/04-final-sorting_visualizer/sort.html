@@ -24,7 +24,8 @@
 
 	<section>
 		<h2 class="center">Parameters</h2>
-		<div class="center">
+
+		<div class="center parameters-display">
 
 			<div class="option-group">
 				<h3 class="center">Display&nbsp;Type</h3>
@@ -33,9 +34,9 @@
 					<button id="vis-bars">Bars</button>
 					<button id="vis-pyramid">Pyramid</button>
 					<button id="vis-points">Points</button>
+					<button id="vis-circle">Circle</button>
 				</div>
 				<div class="center">
-					<button id="vis-circle">Circle</button>
 					<button id="vis-spiral">Spiral</button>
 					<button id="vis-circle-slices">Circle Slices</button>
 					<button id="vis-spiral-slices">Spiral Slices</button>
@@ -45,32 +46,37 @@
 			<div class="option-group">
 				<h3 class="center">Array&nbsp;Size</h3>
 				<p class="center setting" id="set-arraySize">_</p>
-
-				<button id="arr-size-down">
-					--
-				</button>
-				<button id="arr-size-up">
-					++
-				</button>
+				<div class="center">
+					<button id="arr-size-down">
+						--
+					</button>
+					<button id="arr-size-up">
+						++
+					</button>
+				</div>
 			</div>
 
-
 			<div class="option-group">
-				<h3 class="center">Speed</h3>
-				<p class="center setting" id="set-displaySpeed">_</p>
-
-				<button id="set-spd-reset">Reset</button>
-				<button id="set-spd-up">++</button>
+				<div>
+					<h3 class="center">Speed</h3>
+					<p class="center setting" id="set-displaySpeed">_</p>
+				</div>
+				<div class="center">
+					<button id="set-spd-reset">Reset</button>
+					<button id="set-spd-up">++</button>
+				</div>
 			</div>
 
-
 			<div class="option-group">
-				<h3 class="center">Display&nbsp;Delay</h3>
-				<p class="center setting" id="set-displayTimeout">_</p>
-
-				<button id="set-timeout-down">--</button>
-				<button id="set-timeout-reset">Reset</button>
-				<button id="set-timeout-up">++</button>
+				<div>
+					<h3 class="center">Display&nbsp;Delay</h3>
+					<p class="center setting" id="set-displayTimeout">_</p>
+				</div>
+				<div class="center">
+					<button id="set-timeout-down">--</button>
+					<button id="set-timeout-reset">Reset</button>
+					<button id="set-timeout-up">++</button>
+				</div>
 			</div>
 
 		</div>
@@ -79,85 +85,100 @@
 		<div>
 			<h2 class="center">Sorts</h2>
 
-			<div class="center">
+			<div class="flex-bigRow-smallCol">
 
 				<div class="option-group center-col">
 					<h3 class="center">Slow | O(n^2)</h3>
 
-					<button id="sort-stooge">
-						Stooge
-					</button>
-					<button id="sort-slow">
-						Slow
-					</button>
-					<button id="sort-gnome">
-						Gnome
-					</button>
-					<button id="sort-selection">
-						Selection
-					</button>
-					<button id="sort-bubble">
-						Bubble
-					</button>
-					<button id="sort-oddEven">
-						Odd-Even
-					</button>
-					<button id="sort-gravity">
-						Gravity
-					</button>
+					<div class="option-subgroup">
+						<button id="sort-stooge">
+							Stooge
+						</button>
+						<button id="sort-slow">
+							Slow
+						</button>
+						<button id="sort-gnome">
+							Gnome
+						</button>
+					</div>
+					<div class="option-subgroup">
+						<button id="sort-selection">
+							Selection
+						</button>
+						<button id="sort-bubble">
+							Bubble
+						</button>
+						<button id="sort-oddEven">
+							Odd-Even
+						</button>
+						<button id="sort-gravity">
+							Gravity
+						</button>
+					</div>
 				</div>
 
 				<div class="option-group  center-col">
 					<h3 class="center">Slow+ | O(n^2)</h3>
+					<div class="option-subgroup">
 
-					<button id="sort-insertion">
-						Insertion
-					</button>
-					<button id="sort-cocktail">
-						Cocktail-Shaker
-					</button>
-					<button id="sort-selection-double">
-						Double Selection
-					</button>
-					<button id="sort-batcher-oddEven">
-						Batcher Odd-Even
-					</button>
-					<button id="sort-bitonic">
-						Bitonic
-					</button>
-					<button id="sort-comb">
-						Comb
-					</button>
-					<button id="sort-shell">
-						Shell
-					</button>
+						<button id="sort-cocktail">
+							Cocktail-Shaker
+						</button>
+						<button id="sort-selection-double">
+							Double Selection
+						</button>
+						<button id="sort-batcher-oddEven">
+							Batcher Odd-Even
+						</button>
+					</div>
+
+					<div class="option-subgroup">
+						<button id="sort-insertion">
+							Insertion
+						</button>
+						<button id="sort-bitonic">
+							Bitonic
+						</button>
+						<button id="sort-comb">
+							Comb
+						</button>
+						<button id="sort-shell">
+							Shell
+						</button>
+					</div>
+
 				</div>
 
 				<div class="option-group  center-col">
 					<h3 class="center">Fast | O(n log n)</h3>
 
-					<button id="sort-radix-10">
-						Radix LSD Base10
-					</button>
-					<button id="sort-radix-4">
-						Radix LSD Base4
-					</button>
-					<button id="sort-radix-2">
-						Radix LSD Base2
-					</button>
+					<div class="option-subgroup">
+						<button id="sort-radix-10">
+							Radix LSD Base10
+						</button>
+						<button id="sort-radix-4">
+							Radix LSD Base4
+						</button>
+						<button id="sort-radix-2">
+							Radix LSD Base2
+						</button>
+					</div>
 
-					<button id="sort-insertion-binary">
-						Binary Insertion
-					</button>
-					<button id="sort-heap">
-						Heap
-					</button>
-					<button id="sort-merge">
-						Merge
-					</button>
-					<button id="sort-quick">
-						QuickSort
-					</button>
+					<div class="option-subgroup">
+						<button id="sort-insertion-binary">
+							Binary Insertion
+						</button>
+						<button id="sort-heap">
+							Heap
+						</button>
+						<button id="sort-merge">
+							Merge
+						</button>
+						<button id="sort-quick">
+							QuickSort
+						</button>
+					</div>
+
 				</div>
 
 
@@ -167,7 +188,7 @@
 
 	<section id="section-display">
 
-		<div class="sort-display-head center">
+		<div class="sort-display-head flex-bigRow-smallCol">
 
 			<div class="center-col option-group">
 				<div class="center">
