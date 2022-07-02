@@ -116,6 +116,9 @@ function _displayAudioState() {
 	} else {
 		display.innerText = Math.floor(100 * settings["volume"]).toString() + "%";
 	}
+
+	const slider = document.getElementById("vol-slider");
+	slider.value = settings["volume"];
 }
 
 // ==========================
