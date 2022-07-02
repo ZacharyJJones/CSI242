@@ -1,22 +1,34 @@
 // Godsend: https://stackoverflow.com/questions/37206304/changing-the-pitch-of-an-audio-element-without-external-libraries
 
-let _sound;
+let _beepSound;
+let _dingSound;
 const _audioContext = new AudioContext();
 
-async function loadSound() {
+async function loadBeep() {
 	const options = {
 		method: "GET",
 		headers: new Headers({ "content-type": "arraybuffer" }),
 	};
 
-	const response = await fetch("./TextNoise.wav", options);
+	const response = await fetch("./src/beep.wav", options);
 	const responseAsArrayBuffer = await response.arrayBuffer();
-	_sound = await _audioContext.decodeAudioData(responseAsArrayBuffer);
+	_beepSound = await _audioContext.decodeAudioData(responseAsArrayBuffer);
 }
-loadSound();
+loadBeep();
+async function loadDing() {
+	const options = {
+		method: "GET",
+		headers: new Headers({ "content-type": "arraybuffer" }),
+	};
+
+	const response = await fetch("./src/ding.wav", options);
+	const responseAsArrayBuffer = await response.arrayBuffer();
+	_dingSound = await _audioContext.decodeAudioData(responseAsArrayBuffer);
+}
+loadDing();
 
 function playSoundForIndices(array, colorProps, volume) {
-	if (!_sound) {
+	if (!_beepSound) {
 		return;
 	}
 
@@ -42,12 +54,22 @@ function _playSound(array, index, volume) {
 	// Setup
 	var source = _audioContext.createBufferSource();
 	source.connect(_gainNode);
-	source.buffer = _sound;
+	source.buffer = _beepSound;
 
 	// scale to appropriate pitch
 	// get interpolant value: -1 <-> +1
 	const t = (2 * index) / array.length - 1;
 	source.detune.value = 1000 * t;
 
+	source.start(0);
+}
+
+function _playDingSound(volume) {
+	let _gainNode = _audioContext.createGain();
+	_gainNode.connect(_audioContext.destination);
+	_gainNode.gain.value = clampNum(volume * 2, 0.0, 1.0);
+	var source = _audioContext.createBufferSource();
+	source.connect(_gainNode);
+	source.buffer = _dingSound;
 	source.start(0);
 }

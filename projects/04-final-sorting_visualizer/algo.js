@@ -66,6 +66,9 @@ async function algo_validate(array, canvas) {
 	}
 
 	await display(array, canvas, { show: true });
+	if (isSorted && !settings["muted"]) {
+		_playDingSound(settings["volume"]);
+	}
 	return isSorted;
 }
 
