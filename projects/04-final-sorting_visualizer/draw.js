@@ -87,6 +87,10 @@ async function display(array, canvas, colorProps) {
 	}
 
 	_drawArray(array, ctx, drawInfo.func, drawInfo.props(array, ctx), colorProps);
+	if (!settings["muted"]) {
+		playSoundForIndices(array, colorProps, settings["volume"]);
+	}
+
 	await new Promise((resolve) =>
 		setTimeout(resolve, settings["displayTimeout"])
 	);
@@ -416,5 +420,5 @@ function _rgbColorProps(array, colorProps) {
 		});
 	}
 
-	return { freeColors: freeColors };
+	return { activeIndices: colorProps.activeIndices, freeColors: freeColors };
 }

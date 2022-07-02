@@ -6,6 +6,7 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" href="sort.css">
+	<script src="audio.js"></script>
 	<script src="utils.js"></script>
 	<script src="draw.js"></script>
 	<script src="algo.js"></script>
@@ -166,20 +167,34 @@
 
 	<section id="section-display">
 
-		<h2 id="sort-name">_</h2>
+		<div class="sort-display-head">
+			<div class="center-col option-group">
+				<div class="center">
+					<button id="sort-again">Sort Again!</button>
+					<button id="share">Share This Sort!</button>
+				</div>
+			</div>
+
+			<h2 class="center" id="sort-name">_</h2>
+
+			<div class="center-col option-group">
+				<div class="center">
+					<label for="vol-mute"><span>Mute:</span></label>
+					<input type="checkbox" name="vol-mute" id="vol-mute">
+					<div><span>Audio: </span><span id="audio-display">_</span></div>
+				</div>
+				<div class="center">
+					<label for="vol-slider"><span>Volume: </span></label>
+					<input type="range" name="vol-slider" id="vol-slider" min="0" max="1" step="0.01">
+				</div>
+			</div>
+		</div>
 
 		<figure id="canvas-bg">
 			<canvas id="sort-display"></canvas>
 		</figure>
 
 
-		<div class="center">
-			<p id="share-display"></p>
-		</div>
-		<div class="center">
-			<button id="sort-again">Sort Again!</button>
-			<button id="share">Share This Sort!</button>
-		</div>
 	</section>
 
 

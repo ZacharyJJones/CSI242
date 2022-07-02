@@ -54,6 +54,7 @@ async function algo_validate(array, canvas) {
 		}
 
 		await display(array, canvas, {
+			activeIndices: [i],
 			freeColors: [
 				{
 					color: color_green,
@@ -505,17 +506,22 @@ async function algo_gravity(array, canvas) {
 			}
 		}
 
+		let activeIndices = [];
 		for (let x = 0; x < abacus.length; x++) {
 			let count = 0;
 			for (let y = 0; y < abacus[0].length; y++) {
 				count += abacus[x][y];
 			}
 
+			if (array[x] !== count) {
+				activeIndices.push(x);
+			}
+
 			array[x] = count;
 		}
 
 		// display here, after each gravity wave
-		await display(array, canvas);
+		await display(array, canvas, { activeIndices: activeIndices });
 	}
 }
 

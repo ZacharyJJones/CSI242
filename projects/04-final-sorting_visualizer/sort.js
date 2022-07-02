@@ -13,6 +13,10 @@ const settings = {
 	displayTimeout: 50,
 	displayType: "vis-bars",
 	sortAlgo: "sort-insertion",
+
+	// not done via url, to avoid troll-ability.
+	muted: false,
+	volume: 0.3,
 };
 const settingsDefault = { ...settings };
 
@@ -96,6 +100,24 @@ function _setSortAlgo(algoKey) {
 	}
 }
 
+function _setMuted(yesNo) {
+	settings["muted"] = yesNo == true; // truthy for fun
+	_displayAudioState();
+}
+function _setVolume(vol) {
+	const setVol = clampNum(vol, 0.0, 1.0);
+	settings["volume"] = setVol;
+	_displayAudioState();
+}
+function _displayAudioState() {
+	const display = document.getElementById("audio-display");
+	if (settings["muted"]) {
+		display.innerText = "Muted";
+	} else {
+		display.innerText = Math.floor(100 * settings["volume"]).toString() + "%";
+	}
+}
+
 // ==========================
 
 window.addEventListener("load", () => {
@@ -117,6 +139,8 @@ function _initSettings() {
 	_setDisplayTimeout(settingsDefault["displayTimeout"]);
 	_setDisplayType(settingsDefault["displayType"]);
 	_setSortAlgo(settingsDefault["sortAlgo"]);
+	_setMuted(settingsDefault["muted"]);
+	_setVolume(settingsDefault["volume"]);
 
 	// Override as needed
 	const urlParams = new URLSearchParams(window.location.search);
@@ -196,6 +220,16 @@ function _initButtons(canvas) {
 	document.getElementById("sort-again").addEventListener("click", () => {
 		_invokeSort(sortingArray, canvas);
 	});
+
+	// ETC - Volume
+	const muteCheckbox = document.getElementById("vol-mute");
+	muteCheckbox.addEventListener("change", () => {
+		_setMuted(muteCheckbox.checked);
+	});
+	const volSlider = document.getElementById("vol-slider");
+	volSlider.addEventListener("change", () => {
+		_setVolume(volSlider.value);
+	});
 }
 
 function _getShareLink() {
@@ -224,10 +258,15 @@ function _getShareLink() {
 	copyTextToSystemClipboard(finalUrl);
 }
 async function _shareLinkTempDisplay(link) {
-	const p = document.getElementById("share-display");
-	p.innerText = "Copied To Clipboard!";
-	await new Promise((resolve) => setTimeout(resolve, 3000));
-	p.innerText = "";
+	const button = document.getElementById("share");
+	const prevText = button.innerText;
+	button.innerText = "Copied To Clipboard!";
+	for (let i = 0; i < 4; i++) {
+		await new Promise((resolve) => setTimeout(resolve, 750));
+		button.innerText += ".";
+	}
+
+	button.innerText = prevText;
 }
 
 // ====================================
