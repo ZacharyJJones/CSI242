@@ -237,21 +237,12 @@ function _initButtons(canvas) {
 
 function _getShareLink() {
 	const baseUrl = window.location.origin + window.location.pathname;
-	let queryString = "?";
-
-	const keys = Object.keys(settings);
-	for (let i = 0; i < keys.length; i++) {
-		const key = keys[i];
-
-		if (settings[key] !== settingsDefault[key]) {
-			queryString += `${key}=${settings[key]}`;
-
-			if (i < keys.length - 1) {
-				queryString += "&";
-			}
-		}
-	}
-
+	let queryString =
+		"?" +
+		Object.keys(settings)
+			.filter((key) => settings[key] !== settingsDefault[key])
+			.map((key) => `${key}=${settings[key]}`)
+			.join("&");
 	if (queryString === "?") {
 		queryString = "";
 	}
@@ -308,8 +299,5 @@ function _initArray(size) {
 	}
 	return arrayInit;
 }
-
-// Creates a link
-async function _shareSettings() {}
 
 // ====================================
