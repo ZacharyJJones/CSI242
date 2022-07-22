@@ -2,30 +2,16 @@
 
 let _beepSound;
 let _dingSound;
-const _audioContext = new AudioContext();
+let _audioContext;
+let _audioHasBeenInitialized = false;
 
-async function loadBeep() {
-	const options = {
-		method: "GET",
-		headers: new Headers({ "content-type": "arraybuffer" }),
-	};
-
-	const response = await fetch("./src/beep.wav", options);
-	const responseAsArrayBuffer = await response.arrayBuffer();
-	_beepSound = await _audioContext.decodeAudioData(responseAsArrayBuffer);
+function _initAudio() {
+	_audioContext = new AudioContext();
+	loadBeep();
+	loadDing();
 }
-loadBeep();
-async function loadDing() {
-	const options = {
-		method: "GET",
-		headers: new Headers({ "content-type": "arraybuffer" }),
-	};
 
-	const response = await fetch("./src/ding.wav", options);
-	const responseAsArrayBuffer = await response.arrayBuffer();
-	_dingSound = await _audioContext.decodeAudioData(responseAsArrayBuffer);
-}
-loadDing();
+// =======================
 
 function playSoundForIndices(array, colorProps, volume) {
 	if (!_beepSound) {
@@ -45,6 +31,32 @@ function playSoundForIndices(array, colorProps, volume) {
 		}
 	}
 }
+
+// =======================
+
+async function loadBeep() {
+	const options = {
+		method: "GET",
+		headers: new Headers({ "content-type": "arraybuffer" }),
+	};
+
+	const response = await fetch("./src/beep.wav", options);
+	const responseAsArrayBuffer = await response.arrayBuffer();
+	_beepSound = await _audioContext.decodeAudioData(responseAsArrayBuffer);
+}
+
+async function loadDing() {
+	const options = {
+		method: "GET",
+		headers: new Headers({ "content-type": "arraybuffer" }),
+	};
+
+	const response = await fetch("./src/ding.wav", options);
+	const responseAsArrayBuffer = await response.arrayBuffer();
+	_dingSound = await _audioContext.decodeAudioData(responseAsArrayBuffer);
+}
+
+// =======================
 
 function _playSound(array, index, volume) {
 	let _gainNode = _audioContext.createGain();

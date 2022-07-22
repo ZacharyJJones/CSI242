@@ -17,7 +17,7 @@ const settings = {
 	sortAlgo: "sort-insertion",
 
 	// not done via url, to avoid troll-ability.
-	muted: false,
+	muted: true,
 	volume: 0.3,
 };
 const settingsDefault = { ...settings };
@@ -106,18 +106,29 @@ function _setSortAlgo(algoKey) {
 	}
 }
 
-function _setMuted(yesNo) {
-	settings["muted"] = yesNo == true; // truthy for fun
+function _setMuted(isMuted) {
+	// Evaluates vs "true" to ensure boolean is assigned
+	settings["muted"] = isMuted === true;
 	_displayAudioState();
+
+	if (settings["muted"] && !_audioHasBeenInitialized) {
+		_initAudio();
+		_audioHasBeenInitialized = true;
+	}
 }
+
 function _setVolume(vol) {
 	const setVol = clampNum(vol, 0.0, 1.0);
 	settings["volume"] = setVol;
 	_displayAudioState();
 }
+
 function _displayAudioState() {
 	const display = document.getElementById("audio-display");
-	if (settings["muted"]) {
+	const audioIsMuted = settings["muted"];
+	const muteCheckbox = (document.getElementById("vol-mute").checked =
+		audioIsMuted);
+	if (audioIsMuted) {
 		display.innerText = "Muted";
 	} else {
 		display.innerText = Math.floor(100 * settings["volume"]).toString() + "%";
