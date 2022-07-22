@@ -101,34 +101,43 @@ function _drawArray(array, ctx, drawMethod, drawProps, colorProps) {
 		drawMethod(array, ctx, index, drawProps);
 	};
 
-	array.forEach((x, i) => {
-		draw(i);
-	});
+	const noColorProps = colorProps === undefined;
+	if (noColorProps) {
+		array.forEach((x, i) => {
+			draw(i);
+		});
 
-	// if no props, base draw ONLY
-	if (colorProps === undefined) {
 		return;
 	}
 
 	const originalFillStyle = ctx.fillStyle;
 
-	// darken inactive area
-	const bounds = colorProps.activeBounds;
-	if (bounds !== undefined) {
-		ctx.fillStyle = color_grey;
-		array.forEach((a, i) => {
-			if (!isInBounds(i, bounds)) {
-				draw(i);
-			}
+	// Colored display draws over top of all base draws,
+	// ... so no need to draw those
+	const displayIsColored = colorProps.freeColors?.length >= array.length;
+	if (!displayIsColored) {
+		array.forEach((x, i) => {
+			draw(i);
 		});
-	}
 
-	// Show compared indices
-	if (colorProps.activeIndices !== undefined) {
-		ctx.fillStyle = color_red;
-		colorProps.activeIndices.forEach((x, i) => {
-			draw(x);
-		});
+		// darken inactive area
+		const bounds = colorProps.activeBounds;
+		if (bounds !== undefined) {
+			ctx.fillStyle = color_grey;
+			array.forEach((a, i) => {
+				if (!isInBounds(i, bounds)) {
+					draw(i);
+				}
+			});
+		}
+
+		// Show compared indices
+		if (colorProps.activeIndices !== undefined) {
+			ctx.fillStyle = color_red;
+			colorProps.activeIndices.forEach((x, i) => {
+				draw(x);
+			});
+		}
 	}
 
 	// Show free colors

@@ -345,7 +345,7 @@ async function algo_cocktail(array, canvas) {
 			}
 
 			await display(array, canvas, {
-				activeIndices: [i],
+				activeIndices: [i + 1],
 				activeBounds: { min: min, max: max },
 			});
 		}
