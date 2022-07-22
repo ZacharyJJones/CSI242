@@ -11,6 +11,7 @@ const _drawSettings = {
 let _displaySpeedSkipCounter = 0;
 
 const _colorPropsSchema = {
+	show: true, // either true or the prop is not defined
 	activeIndices: [], // red
 	activeBounds: {
 		min: 0,
@@ -74,7 +75,7 @@ const _hslSettings = {
 
 // Callback method for displaying state at each comparison
 async function display(array, canvas, colorProps) {
-	if (_skipDrawing(colorProps)) {
+	if (_shouldSkipDrawing(colorProps)) {
 		return;
 	}
 
@@ -92,7 +93,7 @@ async function display(array, canvas, colorProps) {
 	}
 
 	await new Promise((resolve) =>
-		setTimeout(resolve, settings["displayTimeout"])
+		setTimeout(resolve, displaySettings["timeout"])
 	);
 }
 
@@ -321,15 +322,17 @@ function _initCanvasContext(canvas) {
 	return context;
 }
 
-function _skipDrawing(colorProps) {
-	if (colorProps !== undefined && colorProps.show === undefined) {
-		_displaySpeedSkipCounter++;
-		if (_displaySpeedSkipCounter % settings["displaySpeed"] !== 0) {
-			return true;
-		} else {
-			_displaySpeedSkipCounter = 0;
-			return false;
-		}
+function _shouldSkipDrawing(colorProps) {
+	if (colorProps?.show === true) {
+		return false;
+	}
+
+	_displaySpeedSkipCounter++;
+	if (_displaySpeedSkipCounter % displaySettings["speed"] !== 0) {
+		return true;
+	} else {
+		_displaySpeedSkipCounter = 0;
+		return false;
 	}
 }
 

@@ -11,8 +11,7 @@ let sortingArray = [];
 
 const settings = {
 	arraySizePow: 6,
-	displaySpeed: 1,
-	displayTimeout: 50,
+	displaySpeed: -5,
 	displayType: "vis-bars",
 	sortAlgo: "sort-insertion",
 
@@ -21,6 +20,7 @@ const settings = {
 	volume: 0.3,
 };
 const settingsDefault = { ...settings };
+const displaySettings = { speed: undefined, timeout: undefined };
 
 // ==========================
 
@@ -82,17 +82,20 @@ function _setArraySizePow(pow) {
 }
 
 function _setDisplaySpeed(speed) {
-	const value = Math.max(1, speed);
-
+	const value = speed; // Math.max(1, speed);
 	settings["displaySpeed"] = value;
-	document.getElementById("set-displaySpeed").innerText = `${value}x`;
-}
+	const speedDisplay = document.getElementById("set-displaySpeed");
 
-function _setDisplayTimeout(timeout) {
-	const value = Math.max(0, timeout);
+	// update everything
+	if (value < 0) {
+		displaySettings["speed"] = 1;
+		displaySettings["timeout"] = -10 * value;
+	} else {
+		displaySettings["speed"] = Math.pow(2, value);
+		displaySettings["timeout"] = 0;
+	}
 
-	settings["displayTimeout"] = value;
-	document.getElementById("set-displayTimeout").innerText = `${value}ms`;
+	speedDisplay.innerText = `${displaySettings["speed"]}x spd, ${displaySettings["timeout"]}ms sleep`;
 }
 
 function _setSortAlgo(algoKey) {
@@ -156,13 +159,12 @@ function _initSettings() {
 	// Standard first, to make sure things get displayed
 	_setArraySizePow(settingsDefault["arraySizePow"]);
 	_setDisplaySpeed(settingsDefault["displaySpeed"]);
-	_setDisplayTimeout(settingsDefault["displayTimeout"]);
 	_setDisplayType(settingsDefault["displayType"]);
 	_setSortAlgo(settingsDefault["sortAlgo"]);
 	_setMuted(settingsDefault["muted"]);
 	_setVolume(settingsDefault["volume"]);
 
-	// Override as needed
+	// Override defaults as needed from params
 	const urlParams = new URLSearchParams(window.location.search);
 	let displaySortImmediately = false;
 	if (urlParams.get("arraySizePow") !== null) {
@@ -171,9 +173,6 @@ function _initSettings() {
 	}
 	if (urlParams.get("displaySpeed") !== null) {
 		_setDisplaySpeed(urlParams.get("displaySpeed"));
-	}
-	if (urlParams.get("displayTimeout") !== null) {
-		_setDisplayTimeout(urlParams.get("displayTimeout"));
 	}
 	if (urlParams.get("displayType") !== null) {
 		_setDisplayType(urlParams.get("displayType"));
@@ -201,28 +200,24 @@ function _initButtons(canvas) {
 		_setArraySizePow(settings["arraySizePow"] - 1);
 		_refreshSortingArray(canvas);
 	});
+	document.getElementById("arr-size-reset").addEventListener("click", () => {
+		_setArraySizePow(settingsDefault["arraySizePow"]);
+		_refreshSortingArray(canvas);
+	});
 	document.getElementById("arr-size-up").addEventListener("click", () => {
 		_setArraySizePow(settings["arraySizePow"] + 1);
 		_refreshSortingArray(canvas);
 	});
 
-	// Speed Mult
+	// Display Speed
+	document.getElementById("set-spd-down").addEventListener("click", () => {
+		_setDisplaySpeed(settings["displaySpeed"] - 1);
+	});
 	document.getElementById("set-spd-reset").addEventListener("click", () => {
 		_setDisplaySpeed(settingsDefault["displaySpeed"]);
 	});
 	document.getElementById("set-spd-up").addEventListener("click", () => {
-		_setDisplaySpeed(settings["displaySpeed"] * 2);
-	});
-
-	// Display Delay
-	document.getElementById("set-timeout-down").addEventListener("click", () => {
-		_setDisplayTimeout(settings["displayTimeout"] - 10);
-	});
-	document.getElementById("set-timeout-reset").addEventListener("click", () => {
-		_setDisplayTimeout(settingsDefault["displayTimeout"]);
-	});
-	document.getElementById("set-timeout-up").addEventListener("click", () => {
-		_setDisplayTimeout(settings["displayTimeout"] + 10);
+		_setDisplaySpeed(settings["displaySpeed"] + 1);
 	});
 
 	// Sorts

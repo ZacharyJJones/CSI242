@@ -9,17 +9,6 @@
 
 /*  */
 
-.flex-bigRow-smallCol {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-}
-@media (max-width: 900px) {
-	.flex-bigRow-smallCol {
-		flex-direction: column;
-	}
-}
-
 .center {
 	display: flex;
 	justify-content: center;
@@ -57,21 +46,19 @@ section {
 
 .parameters-display {
 	display: grid;
-	grid-template-columns: repeat(4, 1fr);
-	grid-template-rows: repeat(1, 1fr);
+	grid-template-columns: repeat(3, 1fr);
 }
-@media (max-width: 1080px) {
+@media (max-width: 1150px) {
 	.parameters-display {
 		display: grid;
 		grid-template-columns: repeat(2, 1fr);
-		grid-template-rows: repeat(2, 1fr);
 	}
 }
-@media (max-width: 600px) {
+@media (max-width: 810px) {
 	.parameters-display {
 		display: grid;
 		grid-template-columns: repeat(1, 1fr);
-		grid-template-rows: repeat(4, 1fr);
+		grid-template-rows: repeat(3, 1fr);
 	}
 }
 
@@ -82,9 +69,24 @@ section {
 	margin: 10px;
 }
 
-.option-subgroup {
+.sort-display-flex {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+.sort-subgroup {
 	display: flex;
 	flex-direction: column;
+}
+@media (max-width: 700px) {
+	.sort-subgroup {
+		display: flex;
+		flex-direction: row;
+	}
+
+	.sort-display-flex {
+		flex-direction: column;
+	}
 }
 
 .setting {
@@ -132,21 +134,4 @@ canvas {
 	background-color: black;
 	padding: 25px;
 	margin: 0px;
-}
-
-/* Media */
-/* 
-@media (min-width: 1250px) {
-	section {
-		width: 1000px;
-	}
-} */
-
-@media (max-width: 900px) {
-	/* breakpoint to make things smaller */
-
-	.option-subgroup {
-		display: flex;
-		flex-direction: row;
-	}
 }

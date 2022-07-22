@@ -50,6 +50,9 @@
 					<button id="arr-size-down">
 						--
 					</button>
+					<button id="arr-size-reset">
+						Reset
+					</button>
 					<button id="arr-size-up">
 						++
 					</button>
@@ -58,24 +61,13 @@
 
 			<div class="option-group">
 				<div>
-					<h3 class="center">Speed</h3>
+					<h3 class="center">Display Speed</h3>
 					<p class="center setting" id="set-displaySpeed">_</p>
 				</div>
 				<div class="center">
+					<button id="set-spd-down">--</button>
 					<button id="set-spd-reset">Reset</button>
 					<button id="set-spd-up">++</button>
-				</div>
-			</div>
-
-			<div class="option-group">
-				<div>
-					<h3 class="center">Display&nbsp;Delay</h3>
-					<p class="center setting" id="set-displayTimeout">_</p>
-				</div>
-				<div class="center">
-					<button id="set-timeout-down">--</button>
-					<button id="set-timeout-reset">Reset</button>
-					<button id="set-timeout-up">++</button>
 				</div>
 			</div>
 
@@ -85,12 +77,12 @@
 		<div>
 			<h2 class="center">Sorts</h2>
 
-			<div class="flex-bigRow-smallCol">
+			<div class="sort-display-flex">
 
 				<div class="option-group center-col">
 					<h3 class="center">Slow | O(n^2)</h3>
 
-					<div class="option-subgroup">
+					<div class="sort-subgroup">
 						<button id="sort-stooge">
 							Stooge
 						</button>
@@ -101,7 +93,7 @@
 							Gnome
 						</button>
 					</div>
-					<div class="option-subgroup">
+					<div class="sort-subgroup">
 						<button id="sort-selection">
 							Selection
 						</button>
@@ -119,7 +111,7 @@
 
 				<div class="option-group  center-col">
 					<h3 class="center">Slow+ | O(n^2)</h3>
-					<div class="option-subgroup">
+					<div class="sort-subgroup">
 
 						<button id="sort-cocktail">
 							Cocktail-Shaker
@@ -132,7 +124,7 @@
 						</button>
 					</div>
 
-					<div class="option-subgroup">
+					<div class="sort-subgroup">
 						<button id="sort-insertion">
 							Insertion
 						</button>
@@ -152,7 +144,7 @@
 				<div class="option-group  center-col">
 					<h3 class="center">Fast | O(n log n)</h3>
 
-					<div class="option-subgroup">
+					<div class="sort-subgroup">
 						<button id="sort-radix-10">
 							Radix LSD Base10
 						</button>
@@ -164,7 +156,7 @@
 						</button>
 					</div>
 
-					<div class="option-subgroup">
+					<div class="sort-subgroup">
 						<button id="sort-insertion-binary">
 							Binary Insertion
 						</button>
@@ -188,7 +180,7 @@
 
 	<section id="section-display">
 
-		<div class="sort-display-head flex-bigRow-smallCol">
+		<div class="sort-display-head">
 
 			<div class="center-col option-group">
 				<div class="center">
