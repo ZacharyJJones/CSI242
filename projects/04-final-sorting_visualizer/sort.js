@@ -6,7 +6,9 @@ const color_green = "#50C878";
 
 //
 
+let _currentlySorting = false;
 let sortingArray = [];
+
 const settings = {
 	arraySizePow: 6,
 	displaySpeed: 1,
@@ -94,6 +96,10 @@ function _setDisplayTimeout(timeout) {
 }
 
 function _setSortAlgo(algoKey) {
+	if (_currentlySorting) {
+		return;
+	}
+
 	if (Object.keys(sorts).some((x) => x === algoKey)) {
 		settings["sortAlgo"] = algoKey;
 		document.getElementById("sort-name").innerText = algoKey;
@@ -266,6 +272,11 @@ async function _shareLinkTempDisplay(link) {
 // ====================================
 
 async function _invokeSort(array, canvas) {
+	if (_currentlySorting) {
+		return;
+	}
+	_currentlySorting = true;
+
 	jumpToId(canvas.id);
 	await _preSortRandomize(array, canvas);
 
@@ -273,6 +284,7 @@ async function _invokeSort(array, canvas) {
 	await sortMethod(array, canvas);
 
 	await algo_validate(array, canvas);
+	_currentlySorting = false;
 }
 
 async function _preSortRandomize(array, canvas) {
