@@ -88,8 +88,8 @@ async function display(array, canvas, colorProps) {
 	}
 
 	_drawArray(array, ctx, drawInfo.func, drawInfo.props(array, ctx), colorProps);
-	if (!settings["muted"]) {
-		playSoundForIndices(array, colorProps, settings["volume"]);
+	if (!audioSettings["muted"]) {
+		playSoundForIndices(array, colorProps, audioSettings["volume"]);
 	}
 
 	await new Promise((resolve) =>

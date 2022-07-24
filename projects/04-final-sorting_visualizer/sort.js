@@ -20,7 +20,11 @@ const settings = {
 	volume: 0.3,
 };
 const settingsDefault = { ...settings };
+
 const displaySettings = { speed: undefined, timeout: undefined };
+
+const audioSettings = { muted: true, volume: 0.3 };
+const audioSettingsDefault = { ...audioSettings };
 
 // ==========================
 
@@ -112,10 +116,10 @@ function _setSortAlgo(algoKey) {
 
 function _setMuted(isMuted) {
 	// Evaluates vs "true" to ensure boolean is assigned
-	settings["muted"] = isMuted === true;
+	audioSettings["muted"] = isMuted === true;
 	_displayAudioState();
 
-	if (!settings["muted"] && !_audioHasBeenInitialized) {
+	if (!audioSettings["muted"] && !_audioHasBeenInitialized) {
 		_initAudio();
 		_audioHasBeenInitialized = true;
 	}
@@ -123,23 +127,24 @@ function _setMuted(isMuted) {
 
 function _setVolume(vol) {
 	const setVol = clampNum(vol, 0.0, 1.0);
-	settings["volume"] = setVol;
+	audioSettings["volume"] = setVol;
 	_displayAudioState();
 }
 
 function _displayAudioState() {
 	const display = document.getElementById("audio-display");
-	const audioIsMuted = settings["muted"];
+	const audioIsMuted = audioSettings["muted"];
 	const muteCheckbox = (document.getElementById("vol-mute").checked =
 		audioIsMuted);
 	if (audioIsMuted) {
 		display.innerText = "Muted";
 	} else {
-		display.innerText = Math.floor(100 * settings["volume"]).toString() + "%";
+		display.innerText =
+			Math.floor(100 * audioSettings["volume"]).toString() + "%";
 	}
 
 	const slider = document.getElementById("vol-slider");
-	slider.value = settings["volume"];
+	slider.value = audioSettings["volume"];
 }
 
 // ==========================
@@ -162,8 +167,9 @@ function _initSettings() {
 	_setDisplaySpeed(settingsDefault["displaySpeed"]);
 	_setDisplayType(settingsDefault["displayType"]);
 	_setSortAlgo(settingsDefault["sortAlgo"]);
-	_setMuted(settingsDefault["muted"]);
-	_setVolume(settingsDefault["volume"]);
+
+	_setMuted(audioSettingsDefault["muted"]);
+	_setVolume(audioSettingsDefault["volume"]);
 
 	// Override defaults as needed from params
 	const urlParams = new URLSearchParams(window.location.search);
