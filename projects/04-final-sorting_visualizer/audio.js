@@ -78,6 +78,10 @@ function _playSound(array, index, volume) {
 }
 
 function _playDingSound(volume) {
+	if (!_dingSound) {
+		return;
+	}
+
 	let _gainNode = _audioContext.createGain();
 	_gainNode.connect(_audioContext.destination);
 	_gainNode.gain.value = clampNum(volume * 2, 0.0, 1.0);
