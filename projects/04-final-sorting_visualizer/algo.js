@@ -489,6 +489,7 @@ async function algo_gravity(array, canvas) {
 	let abacus = Array.from(Array(array.length), () => new Array(max).fill(0));
 
 	for (let i = 0; i < array.length; i++) {
+		await display(array, canvas, { activeIndices: [i] });
 		for (let j = 0; j < array[i]; j++) {
 			abacus[i][abacus[0].length - j - 1] = 1;
 		}
@@ -805,9 +806,17 @@ async function algo_radix_lsd_base2(array, canvas) {
 	await algo_radix_lsd_anyBase(array, canvas, 2);
 }
 async function algo_radix_lsd_anyBase(array, canvas, radix) {
-	const mostDigits = array
-		.map((x) => algo_radix_digitCount(x - 1, radix))
-		.reduce((prev, curr) => Math.max(prev, curr));
+	// Moved to "for" loop to show initial iteration.
+	// -> Array aggregate functions cannot have await.
+	// const mostDigits = array
+	// 	.map((x) => algo_radix_digitCount(x - 1, radix))
+	// 	.reduce((prev, curr) => Math.max(prev, curr));
+	let mostDigits = 0;
+	for (let i = 0; i < array.length; i++) {
+		const digitCountAtIndex = algo_radix_digitCount(array[i] - 1, radix);
+		mostDigits = Math.max(mostDigits, digitCountAtIndex);
+		await display(array, canvas, { activeIndices: [i] });
+	}
 
 	for (let k = 0; k < mostDigits; k++) {
 		const bucketInsertIndices = new Array(radix).fill(array.length - 1);
