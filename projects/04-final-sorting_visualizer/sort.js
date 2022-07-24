@@ -59,6 +59,7 @@ const sorts = {
 	"sort-radix-10": algo_radix_lsd_base10,
 	"sort-radix-4": algo_radix_lsd_base4,
 	"sort-radix-2": algo_radix_lsd_base2,
+	"sort-weave": algo_weave,
 	"sort-insertion-binary": algo_insertion_binary,
 	"sort-heap": algo_heap,
 	"sort-merge": algo_mergesort,

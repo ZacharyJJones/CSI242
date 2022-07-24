@@ -72,9 +72,18 @@ async function algo_validate(array, canvas) {
 	return isSorted;
 }
 
-function algo_util_shiftRightTo(array, indexToShift, destinationIndex) {
-	for (let i = indexToShift; i < destinationIndex; i++) {
-		swap(array, i, i + 1);
+function algo_util_shiftTo(array, indexToShift, destinationIndex) {
+	//
+	if (destinationIndex - indexToShift > 0) {
+		// right shift
+		for (let i = indexToShift; i < destinationIndex; i++) {
+			swap(array, i, i + 1);
+		}
+	} else {
+		// left shift
+		for (let i = indexToShift; i > destinationIndex; i--) {
+			swap(array, i, i - 1);
+		}
 	}
 }
 
@@ -587,6 +596,51 @@ async function algo_batcher_oddeven(array, canvas) {
 // https://github.com/BonzaiThePenguin/WikiSort/blob/master/WikiSort.cpp
 // Block Sort / Wiki Sort -- TODO
 
+// AKA Tim sort
+async function algo_weave(array, canvas) {
+	await algo_weave_recursive(array, canvas, 0, array.length - 1);
+}
+async function algo_weave_recursive(array, canvas, min, max) {
+	// Just 1 element, nothing to be done
+	if (max - min === 0) {
+		return;
+	}
+
+	// Only 2 elements, simple comparison
+	if (max - min === 1 && array[min] > array[max]) {
+		swap(array, min, max);
+		await display(array, canvas, { activeIndices: [min, max] });
+		return;
+	}
+
+	// Need to further break down the array
+	const mid = Math.floor((min + max) / 2);
+	await algo_weave_recursive(array, canvas, min, mid);
+	await algo_weave_recursive(array, canvas, mid + 1, max);
+	await algo_weave_merge(array, canvas, min, max, mid);
+}
+async function algo_weave_merge(array, canvas, min, max, mid) {
+	const target = mid - min;
+	for (let i = 1; i <= target; i++) {
+		const a = mid + i;
+		const b = min + i * 2 - 1;
+		algo_util_shiftTo(array, a, b);
+		await display(array, canvas, { activeIndices: [a, b] });
+	}
+
+	await algo_weave_insertion(array, canvas, min, max + 1);
+}
+async function algo_weave_insertion(array, canvas, start, end) {
+	for (let i = start; i < end; i++) {
+		await display(array, canvas, { activeIndices: [i] });
+
+		for (let pos = i; pos > start && array[pos] < array[pos - 1]; pos--) {
+			swap(array, pos, pos - 1);
+			await display(array, canvas, { activeIndices: [i, pos - 1] });
+		}
+	}
+}
+
 async function algo_heap(array, canvas) {
 	await algo_heap_heapify(array, canvas);
 
@@ -824,7 +878,7 @@ async function algo_radix_lsd_anyBase(array, canvas, radix) {
 		for (let i = 0; i < array.length; i++) {
 			const digit = algo_radix_getDigit(array[0] - 1, k, radix);
 
-			algo_util_shiftRightTo(array, 0, bucketInsertIndices[digit]);
+			algo_util_shiftTo(array, 0, bucketInsertIndices[digit]);
 
 			for (let j = 0; j < digit; j++) {
 				bucketInsertIndices[j]--;
