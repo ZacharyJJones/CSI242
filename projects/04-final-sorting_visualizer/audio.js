@@ -5,11 +5,12 @@ let _dingSound;
 let _audioContext;
 let _audioHasBeenInitialized = false;
 
-function _initAudio() {
-	_audioContext = new AudioContext();
-	loadBeep();
-	loadDing();
-}
+// Moving to direct button press code, hopefully will fix
+// function _initAudio() {
+// 	_audioContext = new AudioContext();
+// 	loadBeep();
+// 	loadDing();
+// }
 
 // =======================
 
