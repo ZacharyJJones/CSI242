@@ -113,6 +113,11 @@ function _setMuted(isMuted) {
 	// Evaluates vs "true" to ensure boolean is assigned
 	settings["muted"] = isMuted === true;
 	_displayAudioState();
+
+	if (!settings["muted"] && !_audioHasBeenInitialized) {
+		_initAudio();
+		_audioHasBeenInitialized = true;
+	}
 }
 
 function _setVolume(vol) {
@@ -235,14 +240,6 @@ function _initButtons(canvas) {
 	const muteCheckbox = document.getElementById("vol-mute");
 	muteCheckbox.addEventListener("change", () => {
 		_setMuted(muteCheckbox.checked);
-
-		// Doing Audio setup within the click handler
-		if (!settings["muted"] && !_audioHasBeenInitialized) {
-			_audioContext = new AudioContext();
-			_audioHasBeenInitialized = true;
-			loadBeep();
-			loadDing();
-		}
 	});
 	const volSlider = document.getElementById("vol-slider");
 	volSlider.addEventListener("change", () => {
