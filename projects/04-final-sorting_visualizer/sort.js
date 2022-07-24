@@ -32,8 +32,9 @@ const displays = {
 	"vis-bars": "Bars",
 	"vis-pyramid": "Pyramid",
 	"vis-points": "Points",
-
 	"vis-circle": "Circle",
+
+	"vis-disp-rings": "Rings",
 	"vis-spiral": "Spiral",
 	"vis-circle-slices": "Circle-Slices",
 	"vis-spiral-slices": "Spiral-Slices",

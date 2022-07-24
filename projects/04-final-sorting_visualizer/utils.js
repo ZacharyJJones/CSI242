@@ -1,4 +1,4 @@
-const twoPI = 2.0 * Math.PI;
+const TWO_PI = 2.0 * Math.PI;
 
 // =====
 
@@ -33,8 +33,8 @@ function jumpToId(id) {
 
 // where 0 <= t <= 1
 function getCircleCoords(t) {
-	const x = Math.sin(twoPI * t);
-	const y = Math.cos(twoPI * t);
+	const x = Math.sin(TWO_PI * t);
+	const y = Math.cos(TWO_PI * t);
 	// const y = (x + 0.75) % 1.0; // this is incorrect. see:
 	// https://www.desmos.com/calculator/gamhctzjbl
 

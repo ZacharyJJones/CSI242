@@ -39,11 +39,18 @@ const _drawInfo = {
 		props: _getLinearProps,
 		func: _drawPoint,
 	},
-
 	"vis-circle": {
 		color: "RGB",
 		props: _getCircleProps,
 		func: _drawCircle,
+	},
+
+	// disparity rings does not look correct when drawing 0->max.
+	// -> biggest circles are pasted over top of everything else.
+	"vis-disp-rings": {
+		color: "RGB",
+		props: _getCircleProps,
+		func: _drawDisparityRings,
 	},
 	"vis-spiral": {
 		color: "Monochrome",
@@ -272,7 +279,7 @@ function _drawCircleSlicesSpiral(
 	array,
 	ctx,
 	index,
-	{ circleCenter, circleSize, drawSize, drawSizeHalf }
+	{ circleCenter, circleSize }
 ) {
 	const t = lerp(
 		_drawSettings["circleSpiralMinT"],
@@ -301,6 +308,37 @@ function _drawCircleSlicesSpiral(
 	ctx.lineTo(nextX, nextY);
 	ctx.closePath();
 	ctx.fill();
+}
+
+function _drawDisparityRings(array, ctx, index, { circleCenter, circleSize }) {
+	const circleRadiusT_valueAtIndex = (array[index] + 1) / array.length;
+	const circleRadiusT_indexDiffScalar = getCircleIndexDiffScalar(array, index);
+	const circleRadius =
+		circleSize.y * circleRadiusT_valueAtIndex * circleRadiusT_indexDiffScalar;
+
+	// const circleSizeT = Math.abs(1);
+	// const circleRadius = circleSize.y * circleSizeT;
+
+	// const circleSizeT = getCircleIndexDiffScalar(array, index);
+	// const circleSizeIndexValueT = array[index] / array.length;
+	// const circleRadius = circleSize.y * circleSizeT * circleSizeIndexValueT;
+
+	// Huge hack here just to get it
+	// .... to show as rings instead of full circles.
+	// -> Draw functions should not be altering context
+	// ... properties while drawing
+	const prevstrokeStyle = ctx.strokeStyle;
+	ctx.strokeStyle = ctx.fillStyle;
+	// _ctxDrawCircleOutline(ctx, startPos.x, startPos.y, circleRadius);
+
+	const circleYOffset = lerp(0, circleSize.y, index / array.length);
+	_ctxDrawCircleOutline(
+		ctx,
+		circleCenter.x,
+		circleCenter.y + circleYOffset - circleRadius,
+		circleRadius
+	);
+	ctx.strokeStyle = prevstrokeStyle;
 }
 
 // ===========
@@ -375,8 +413,14 @@ function _getCircleProps(array, ctx) {
 
 function _ctxDrawCircle(ctx, x, y, radius) {
 	ctx.beginPath();
-	ctx.ellipse(x, y, radius, radius, 0, 0, twoPI);
+	ctx.ellipse(x, y, radius, radius, 0, 0, TWO_PI);
 	ctx.fill();
+}
+
+function _ctxDrawCircleOutline(ctx, x, y, radius) {
+	ctx.beginPath();
+	ctx.arc(x, y, radius, 0, TWO_PI);
+	ctx.stroke();
 }
 
 //
