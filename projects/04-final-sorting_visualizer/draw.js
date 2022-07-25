@@ -25,47 +25,53 @@ const _colorPropsSchema = {
 
 const _drawInfo = {
 	"vis-bars": {
-		color: "Monochrome",
+		color: _drawArray_fillStyles_monochrome,
 		props: _getLinearProps,
 		func: _drawBar,
+		iter: "Forward",
 	},
 	"vis-pyramid": {
-		color: "Monochrome",
+		color: _drawArray_fillStyles_monochrome,
 		props: _getLinearProps,
 		func: _drawPyramid,
+		iter: "Forward",
 	},
 	"vis-points": {
-		color: "Monochrome",
+		color: _drawArray_fillStyles_monochrome,
 		props: _getLinearProps,
 		func: _drawPoint,
+		iter: "Forward",
 	},
 	"vis-circle": {
-		color: "RGB",
+		color: _drawArray_fillStyles_color,
 		props: _getCircleProps,
 		func: _drawCircle,
+		iter: "Forward",
 	},
 
-	// disparity rings does not look correct when drawing 0->max.
-	// -> biggest circles are pasted over top of everything else.
 	"vis-disp-rings": {
-		color: "RGB",
+		color: _drawArray_fillStyles_color,
 		props: _getCircleProps,
 		func: _drawDisparityRings,
+		iter: "Backward",
 	},
 	"vis-spiral": {
-		color: "Monochrome",
+		color: _drawArray_fillStyles_monochrome,
 		props: _getCircleProps,
 		func: _drawCircleSpiral,
+		iter: "Forward",
 	},
 	"vis-circle-slices": {
-		color: "RGB",
+		color: _drawArray_fillStyles_color,
 		props: _getCircleProps,
 		func: _drawCircleSlices,
+		iter: "Forward",
 	},
 	"vis-spiral-slices": {
-		color: "Monochrome",
+		color: _drawArray_fillStyles_monochrome,
 		props: _getCircleProps,
 		func: _drawCircleSlicesSpiral,
+		iter: "Forward",
 	},
 };
 
@@ -87,14 +93,9 @@ async function display(array, canvas, colorProps) {
 	}
 
 	const ctx = _initCanvasContext(canvas);
-
 	const drawInfo = _drawInfo[settings["displayType"]];
 
-	if (drawInfo.color === "RGB") {
-		colorProps = _rgbColorProps(array, colorProps);
-	}
-
-	_drawArray(array, ctx, drawInfo.func, drawInfo.props(array, ctx), colorProps);
+	_drawArray(array, ctx, drawInfo, colorProps);
 	if (!audioSettings["muted"]) {
 		playSoundForIndices(array, colorProps, audioSettings["volume"]);
 	}
@@ -104,62 +105,107 @@ async function display(array, canvas, colorProps) {
 	);
 }
 
-function _drawArray(array, ctx, drawMethod, drawProps, colorProps) {
-	const draw = (index) => {
-		drawMethod(array, ctx, index, drawProps);
-	};
-
-	const noColorProps = colorProps === undefined;
-	if (noColorProps) {
-		array.forEach((x, i) => {
-			draw(i);
-		});
-
-		return;
-	}
-
+function _drawArray(array, ctx, drawInfo, colorProps) {
 	const originalFillStyle = ctx.fillStyle;
 
-	// Colored display draws over top of all base draws,
-	// ... so no need to draw those
-	const displayIsColored = colorProps.freeColors?.length >= array.length;
-	if (!displayIsColored) {
-		array.forEach((x, i) => {
+	// Setup for Draw
+	const indexFillStyles = drawInfo.color(array, ctx, colorProps);
+	const drawProps = drawInfo.props(array, ctx);
+
+	// Set up Draw method
+	const draw = (index) => {
+		ctx.fillStyle = indexFillStyles[index];
+		drawInfo.func(array, ctx, index, drawProps);
+	};
+
+	// Finish up
+	if (drawInfo.iter === "Backward") {
+		for (let i = array.length - 1; i > 0; i--) {
 			draw(i);
-		});
-
-		// darken inactive area
-		const bounds = colorProps.activeBounds;
-		if (bounds !== undefined) {
-			ctx.fillStyle = color_grey;
-			array.forEach((a, i) => {
-				if (!isInBounds(i, bounds)) {
-					draw(i);
-				}
-			});
 		}
+	} else {
+		for (let i = 0; i < array.length; i++) {
+			draw(i);
+		}
+	}
 
-		// Show compared indices
-		if (colorProps.activeIndices !== undefined) {
-			ctx.fillStyle = color_red;
-			colorProps.activeIndices.forEach((x, i) => {
-				draw(x);
-			});
+	// drawInfo.iter(array, draw);
+	// drawInfo.iter(array, (i) => draw(i));
+	ctx.fillStyle = originalFillStyle;
+	return;
+}
+function _drawArray_fillStyles_monochrome(array, ctx, colorProps) {
+	// Initial Fill
+	const indexFillStyles = new Array(array.length).fill(ctx.fillStyle);
+
+	// darken inactive area
+	const bounds = colorProps?.activeBounds;
+	if (bounds !== undefined) {
+		for (let i = 0; i < bounds.min; i++) {
+			indexFillStyles[i] = color_grey;
+		}
+		for (let i = bounds.max + 1; i < indexFillStyles.length; i++) {
+			indexFillStyles[i] = color_grey;
 		}
 	}
 
 	// Show free colors
-	if (colorProps.freeColors !== undefined) {
+	if (colorProps?.freeColors !== undefined) {
 		colorProps.freeColors.forEach((item) => {
-			ctx.fillStyle = item.color;
 			for (let i = item.min; i <= item.max; i++) {
-				draw(i);
+				indexFillStyles[i] = item.color;
 			}
 		});
 	}
 
-	// return to default
-	ctx.fillStyle = originalFillStyle;
+	// Show compared indices
+	if (colorProps?.activeIndices !== undefined) {
+		colorProps.activeIndices.forEach((x) => {
+			indexFillStyles[x] = color_red;
+		});
+	}
+
+	return indexFillStyles;
+}
+function _drawArray_fillStyles_color(array, ctx, colorProps) {
+	// Initial Fill
+	const indexFillStyles = new Array(array.length).fill(undefined);
+	for (let i = 0; i < indexFillStyles.length; i++) {
+		const hue = Math.floor(lerp(0, 360, array[i] / array.length));
+		indexFillStyles[i] = hslToHex(hue, _hslSettings.sat, _hslSettings.lum);
+	}
+
+	// darken inactive area
+	const bounds = colorProps?.activeBounds;
+	if (bounds !== undefined) {
+		const lowLum = _hslSettings.lum * 0.8;
+		for (let i = 0; i < bounds.min; i++) {
+			const hue = Math.floor(lerp(0, 360, array[i] / array.length));
+			indexFillStyles[i] = hslToHex(hue, _hslSettings.sat, lowLum);
+		}
+		for (let i = bounds.max + 1; i < indexFillStyles.length; i++) {
+			const hue = Math.floor(lerp(0, 360, array[i] / array.length));
+			indexFillStyles[i] = hslToHex(hue, _hslSettings.sat, lowLum);
+		}
+	}
+
+	// Show free colors
+	if (colorProps?.freeColors !== undefined) {
+		colorProps.freeColors.forEach((freeColor, i) => {
+			for (let i = freeColor.min; i <= freeColor.max; i++) {
+				indexFillStyles[i] = "#FFF";
+			}
+		});
+	}
+
+	// Show active indices
+	if (colorProps?.activeIndices !== undefined) {
+		colorProps.activeIndices.forEach((x) => {
+			indexFillStyles[x] = "#FFF";
+		});
+	}
+
+	return indexFillStyles;
 }
 
 // ===================
@@ -312,16 +358,14 @@ function _drawCircleSlicesSpiral(
 
 function _drawDisparityRings(array, ctx, index, { circleCenter, circleSize }) {
 	const circleRadiusT_valueAtIndex = (array[index] + 1) / array.length;
-	const circleRadiusT_indexDiffScalar = getCircleIndexDiffScalar(array, index);
+
+	const indexDiff = Math.abs(index - array[index] - 1) / array.length;
+	const circleRadiusT_indexDiffScalar = 1.0 - indexDiff;
+	// const circleRadiusT_indexDiffScalar = getCircleIndexDiffScalar(array, index);
+
+	const circleYOffset = lerp(0, circleSize.y, index / array.length);
 	const circleRadius =
 		circleSize.y * circleRadiusT_valueAtIndex * circleRadiusT_indexDiffScalar;
-
-	// const circleSizeT = Math.abs(1);
-	// const circleRadius = circleSize.y * circleSizeT;
-
-	// const circleSizeT = getCircleIndexDiffScalar(array, index);
-	// const circleSizeIndexValueT = array[index] / array.length;
-	// const circleRadius = circleSize.y * circleSizeT * circleSizeIndexValueT;
 
 	// Huge hack here just to get it
 	// .... to show as rings instead of full circles.
@@ -329,9 +373,6 @@ function _drawDisparityRings(array, ctx, index, { circleCenter, circleSize }) {
 	// ... properties while drawing
 	const prevstrokeStyle = ctx.strokeStyle;
 	ctx.strokeStyle = ctx.fillStyle;
-	// _ctxDrawCircleOutline(ctx, startPos.x, startPos.y, circleRadius);
-
-	const circleYOffset = lerp(0, circleSize.y, index / array.length);
 	_ctxDrawCircleOutline(
 		ctx,
 		circleCenter.x,
@@ -421,60 +462,4 @@ function _ctxDrawCircleOutline(ctx, x, y, radius) {
 	ctx.beginPath();
 	ctx.arc(x, y, radius, 0, TWO_PI);
 	ctx.stroke();
-}
-
-//
-function _rgbColorProps(array, colorProps) {
-	let freeColors = [];
-
-	array.forEach((a, i) => {
-		const hue = Math.floor(lerp(0, 360, array[i] / array.length));
-		freeColors.push({
-			color: hslToHex(hue, _hslSettings.sat, _hslSettings.lum),
-			min: i,
-			max: i,
-		});
-	});
-
-	if (colorProps === undefined) {
-		return { freeColors: freeColors };
-	}
-
-	if (colorProps.activeIndices !== undefined) {
-		colorProps.activeIndices.forEach((x) => {
-			freeColors.push({
-				color: "#FFF",
-				min: x,
-				max: x,
-			});
-		});
-	}
-
-	if (colorProps.freeColors !== undefined) {
-		colorProps.freeColors.forEach((x, i) => {
-			freeColors.push({
-				color: "#FFF",
-				min: x.min,
-				max: x.max,
-			});
-		});
-	}
-
-	// darken inactive area
-	const bounds = colorProps.activeBounds;
-	if (bounds !== undefined) {
-		const lowLum = _hslSettings.lum * 0.8;
-		array.forEach((a, i) => {
-			if (!isInBounds(i, bounds)) {
-				const hue = Math.floor(lerp(0, 360, array[i] / array.length));
-				freeColors.push({
-					color: hslToHex(hue, _hslSettings.sat, lowLum),
-					min: i,
-					max: i,
-				});
-			}
-		});
-	}
-
-	return { activeIndices: colorProps.activeIndices, freeColors: freeColors };
 }

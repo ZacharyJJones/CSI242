@@ -54,7 +54,7 @@ async function algo_validate(array, canvas) {
 		}
 
 		await display(array, canvas, {
-			activeIndices: [i],
+			activeIndices: [i, i - 1],
 			freeColors: [
 				{
 					color: color_green,
@@ -66,8 +66,8 @@ async function algo_validate(array, canvas) {
 	}
 
 	await display(array, canvas, { show: true });
-	if (isSorted && !settings["muted"]) {
-		_playDingSound(settings["volume"]);
+	if (isSorted && !audioSettings["muted"]) {
+		_playDingSound(audioSettings["volume"]);
 	}
 	return isSorted;
 }
@@ -449,7 +449,7 @@ async function algo_shell(array, canvas) {
 				k -= gap;
 
 				await display(array, canvas, {
-					activeIndices: [k, k - gap],
+					activeIndices: [j, k, k - gap],
 				});
 			}
 			array[k] = element;
@@ -717,7 +717,7 @@ async function algo_insertion_binary(array, canvas) {
 				array,
 				canvas,
 				{
-					activeIndices: [i],
+					activeIndices: [i, i - 1],
 					activeBounds: {
 						min: 0,
 						max: i,
