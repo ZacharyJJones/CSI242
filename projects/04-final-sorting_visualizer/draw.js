@@ -365,7 +365,10 @@ function _drawDisparityRings(array, ctx, index, { circleCenter, circleSize }) {
 
 	const circleYOffset = lerp(0, circleSize.y, index / array.length);
 	const circleRadius =
-		circleSize.y * circleRadiusT_valueAtIndex * circleRadiusT_indexDiffScalar;
+		circleSize.y *
+		circleRadiusT_valueAtIndex *
+		circleRadiusT_indexDiffScalar *
+		circleRadiusT_indexDiffScalar;
 
 	// Huge hack here just to get it
 	// .... to show as rings instead of full circles.

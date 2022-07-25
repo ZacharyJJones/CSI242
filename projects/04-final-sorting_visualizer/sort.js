@@ -80,7 +80,7 @@ function _setDisplayType(displayKey) {
 }
 
 function _setArraySizePow(pow) {
-	const clampedPow = clampNum(pow, 0, 16);
+	const clampedPow = clampNum(pow, 4, 16);
 
 	settings["arraySizePow"] = clampedPow;
 	const displayText = `2^${clampedPow} | ${Math.pow(2, clampedPow)}`;
